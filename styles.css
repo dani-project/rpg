@@ -7,13 +7,13 @@
 body {
     font-family: 'PixelFont';
     background-color: black;
-    color: #1c2dab;
-    /* Slightly lighter blue */
+    color: #1c2dab; /* Slightly lighter blue */
     margin: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
+    overflow-x: hidden; /* Prevent horizontal scrolling on smaller screens */
 }
 
 .page {
@@ -32,8 +32,8 @@ body {
     color: #1c2dab;
     cursor: pointer;
     margin: 10px;
-    font-size: 1.05em;
-    transition: background-color 0.3s, transform 0.3s; /* Add transition for transform */
+    font-size: 1em; /* Adjusted font size for mobile */
+    transition: background-color 0.3s, transform 0.3s;
     display: inline-block;
 }
 
@@ -50,7 +50,7 @@ body {
     padding: 10px;
     margin: 10px;
     color: #1c2dab;
-    width: 80%;
+    width: 90%; /* Adjusted width for mobile */
     margin: 0 auto 20px auto;
 }
 
@@ -69,6 +69,7 @@ body {
 #actions {
     display: flex;
     justify-content: center;
+    flex-wrap: wrap; /* Allow actions to wrap on smaller screens */
 }
 
 .store-item {
@@ -79,6 +80,9 @@ body {
     padding: 5px;
     border: 1px solid #1c2dab;
     background-color: #000;
+    width: 90%; /* Adjusted width for mobile */
+    margin: 0 auto;
+    max-width: 400px; /* Limit max width for smaller screens */
 }
 
 .store-item p {
@@ -95,6 +99,7 @@ h1,
 h2,
 p {
     margin: 10px 0;
+    font-size: 1.2em; /* Adjusted font size for mobile */
 }
 
 .popup {
@@ -113,17 +118,18 @@ p {
     display: block;
 }
 
-#player-image, #monster-image {
-    width: 200px; /* Reduced size */
-    height: 200px; /* Reduced size */
+#player-image,
+#monster-image {
+    width: 150px; /* Reduced size for smaller screens */
+    height: 150px; /* Reduced size for smaller screens */
     padding-right: 100px;
     padding-left: 100px;
 }
 
 .image-container {
-    background-image: url('background.gif'); /* Set your background image here */
-    background-size: cover; /* Cover the entire container */
-    padding: 20px;
+    background-image: url('background.gif');
+    background-size: cover;
+    padding: 10px;
     border: 2px solid #1c2dab;
     width: 100%;
     display: flex;
@@ -131,4 +137,32 @@ p {
     align-items: center;
     color: #ffffff;
     text-shadow: 2px 2px 0 #000, -2px 2px 0 #000, 2px -2px 0 #000, -2px -2px 0 #000; /* Text outline */
+    flex-wrap: wrap; /* Allow content to wrap on smaller screens */
+}
+
+@media (min-width: 768px) {
+    /* Adjustments for tablets and larger screens */
+    .custom-button {
+        font-size: 1.05em;
+    }
+
+    .custom-box {
+        width: 70%;
+    }
+
+    .store-item {
+        max-width: none;
+    }
+
+    h1,
+    h2,
+    p {
+        font-size: 1.05em;
+    }
+
+    #player-image,
+    #monster-image {
+        width: 200px;
+        height: 200px;
+    }
 }
