@@ -1,0 +1,13 @@
+{
+  "scripts": {
+    "test": "node test",
+    "server": "node server"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "csv-parse": "^5.5.3",
+    "express": "^4.18.2",
+    "fs": "^0.0.1-security",
+    "readline-sync": "^1.4.10"
+  }
+}

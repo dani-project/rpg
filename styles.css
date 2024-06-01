@@ -1,0 +1,134 @@
+@font-face {
+    font-family: 'PixelFont';
+    src: url('PressStart2P-vaV7.ttf') format('truetype');
+    /* Make sure to provide the correct path to your pixelated font */
+}
+
+body {
+    font-family: 'PixelFont';
+    background-color: black;
+    color: #1c2dab;
+    /* Slightly lighter blue */
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.page {
+    display: none;
+    text-align: center;
+}
+
+.page.active {
+    display: block;
+}
+
+.custom-button {
+    background-color: black;
+    border: 2px solid #1c2dab;
+    padding: 10px 20px;
+    color: #1c2dab;
+    cursor: pointer;
+    margin: 10px;
+    font-size: 1.05em;
+    transition: background-color 0.3s, transform 0.3s; /* Add transition for transform */
+    display: inline-block;
+}
+
+.custom-button:hover {
+    color: #00ff88;
+    background-color: #000000;
+    border: 2px solid #00ff88;
+    transform: scale(1.1); /* Grow the button a bit bigger */
+}
+
+.custom-box {
+    background-color: black;
+    border: 2px solid #1c2dab;
+    padding: 10px;
+    margin: 10px;
+    color: #1c2dab;
+    width: 80%;
+    margin: 0 auto 20px auto;
+}
+
+#game-info {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#player-info,
+#monster-info {
+    text-align: center;
+}
+
+#actions {
+    display: flex;
+    justify-content: center;
+}
+
+.store-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0;
+    padding: 5px;
+    border: 1px solid #1c2dab;
+    background-color: #000;
+}
+
+.store-item p {
+    margin: 0;
+    flex: 1;
+    margin-left: 20px;
+}
+
+.store-item .buy-button {
+    margin-left: 20px;
+}
+
+h1,
+h2,
+p {
+    margin: 10px 0;
+}
+
+.popup {
+    display: none;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: black;
+    border: 2px solid #1c2dab;
+    padding: 20px;
+    z-index: 1000;
+}
+
+.popup.active {
+    display: block;
+}
+
+#player-image, #monster-image {
+    width: 200px; /* Reduced size */
+    height: 200px; /* Reduced size */
+    padding-right: 100px;
+    padding-left: 100px;
+}
+
+.image-container {
+    background-image: url('background.gif'); /* Set your background image here */
+    background-size: cover; /* Cover the entire container */
+    padding: 20px;
+    border: 2px solid #1c2dab;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    color: #ffffff;
+    text-shadow: 2px 2px 0 #000, -2px 2px 0 #000, 2px -2px 0 #000, -2px -2px 0 #000; /* Text outline */
+}

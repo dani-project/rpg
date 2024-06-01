@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini RPG Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="start-page" class="page active">
+        <h1>Mini RPG Game</h1>
+        <div class="custom-button" id="start-button">Start Game</div>
+    </div>
+
+    <div id="dungeon-page" class="page">
+        <div id="game-info" class="image-container">
+            <div id="player-info">
+                <img src="player.gif" alt="Player" id="player-image">
+                <p id="player-health">Health: 100 HP</p>
+            </div>
+            <div id="monster-info">
+                <img src="monster.gif" alt="Monster" id="monster-image">
+                <p id="monster-health">Monster Health: </p>
+            </div>
+        </div>
+        <div id="action-log" class="custom-box">
+            <p id="log-text"></p>
+        </div>
+        <div id="actions">
+            <div class="custom-button" id="fight-button">Fight</div>
+            <div class="custom-button" id="run-button">Run</div>
+            <div class="custom-button" id="quit-button">Quit</div>
+        </div>
+        <p id="player-coins">Coins: 0</p>
+        <p id="player-score">Score: 0</p>
+    </div>
+    
+
+    <div id="store-page" class="page">
+        <h2>Store</h2>
+        <p id="player-coins-store">Coins: 0</p>
+        <div id="store-items">
+            <div class="store-item">
+                <p>Damage Buff (Increases damage by 10%) - 100 coins</p>
+                <div class="custom-button buy-button" data-item="2">Buy</div>
+            </div>
+            <div class="store-item">
+                <p>Better Damage Buff (Increases damage by 30%) - 250 coins</p>
+                <div class="custom-button buy-button" data-item="3">Buy</div>
+            </div>
+            <div class="store-item">
+                <p>Legendary Health Potion (Restores 1000 HP) - 400 coins</p>
+                <div class="custom-button buy-button" data-item="4">Buy</div>
+            </div>
+            <div class="store-item">
+                <p>Super Potion (Restores 50 HP) - 100 coins</p>
+                <div class="custom-button buy-button" data-item="5">Buy</div>
+            </div>
+            <div class="store-item">
+                <p>Potion (Restores 20 HP) - 40 coins</p>
+                <div class="custom-button buy-button" data-item="6">Buy</div>
+            </div>
+            <div class="store-item">
+                <p>50% More Coins (Increases coins earned by 50%) - 250 coins</p>
+                <div class="custom-button buy-button" data-item="7">Buy</div>
+            </div>
+        </div>
+        <div class="custom-button" id="continue-button">Continue Exploring</div>
+    </div>
+
+    <div id="end-page" class="page">
+        <h1>Game Over</h1>
+        <p id="player-final-score">Score: 0</p>
+        <div class="custom-button" id="retry-button">Retry</div>
+    </div>
+
+    <div id="popup" class="popup">
+        <p id="popup-message"></p>
+        <div class="custom-button" id="popup-close-button">Close</div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
