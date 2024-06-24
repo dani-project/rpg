@@ -84,22 +84,22 @@ function encounterMonster() {
 
     if (encounterChance <= 3) {
         // Secret boss (3%)
-        monsterHealth = 400;
-        monsterDamage = randomInt(15, 25);
+        monsterHealth = 1000;
+        monsterDamage = randomInt(60, 100);
         coinsMultiplier = 5;
         monsterImage.src = 'secret_boss.gif';
         logTextElement.textContent = "\nA secret boss monster appears!";
     } else if (encounterChance <= 9) {
         // Rare boss (6%)
-        monsterHealth = 300;
-        monsterDamage = randomInt(12, 20);
+        monsterHealth = 500;
+        monsterDamage = randomInt(30, 60);
         coinsMultiplier = 3;
         monsterImage.src = 'rare_boss.gif';
         logTextElement.textContent = "\nA rare boss monster appears!";
     } else if (encounterChance <= 24) {
         // Regular boss (15%)
         monsterHealth = 200;
-        monsterDamage = randomInt(10, 18);
+        monsterDamage = randomInt(15, 25);
         coinsMultiplier = 2;
         monsterImage.src = 'boss.gif';
         logTextElement.textContent = "\nA boss monster appears!";
