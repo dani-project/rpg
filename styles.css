@@ -7,7 +7,7 @@
 body {
     font-family: 'PixelFont';
     background-color: black;
-    color: white  /* #1c2dab; Slightly lighter blue */
+    color: #1c2dab;  /* #1c2dab; Slightly lighter blue */
     margin: 0;
     display: flex;
     justify-content: center;
@@ -29,7 +29,7 @@ body {
     background-color: black;
     border: 2px solid #1c2dab;
     padding: 10px 20px;
-    color: white  /* #1c2dab; Slightly lighter blue */
+    color: #1c2dab;  /* #1c2dab; Slightly lighter blue */
     cursor: pointer;
     margin: 10px;
     font-size: 1em; /* Adjusted font size for mobile */
@@ -46,10 +46,10 @@ body {
 
 .custom-box {
     background-color: black;
-    border: 2px solid white; /* #1c2dab; Slightly lighter blue */
+    border: 2px solid #1c2dab; /* #1c2dab; Slightly lighter blue */
     padding: 10px;
     margin: 10px;
-    color: white  /* #1c2dab; Slightly lighter blue */
+    color: #1c2dab;  /* #1c2dab; Slightly lighter blue */
     width: 90%; /* Adjusted width for mobile */
     margin: 0 auto 20px auto;
 }
@@ -130,7 +130,7 @@ p {
     background-image: url('background.gif');
     background-size: cover;
     padding: 10px;
-    border: 2px solid white; /* #1c2dab; Slightly lighter blue */
+    border: 2px solid #1c2dab; /* #1c2dab; Slightly lighter blue */
     width: 100%;
     display: flex;
     justify-content: space-around;
