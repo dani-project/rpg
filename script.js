@@ -37,33 +37,56 @@ document.querySelectorAll('.buy-button').forEach(button => {
 
 document.addEventListener('keydown', (event) => {
     const key = event.key;
-    if (document.querySelector('.page.active').id === 'dungeon-page') {
+    const activePageId = document.querySelector('.page.active').id;
+
+    if (activePageId === 'dungeon-page') {
         if (key === '1') {
+            triggerHover('fight-button');
             fight();
         } else if (key === '2') {
+            triggerHover('run-button');
             run();
         } else if (key === '3') {
+            triggerHover('quit-button');
             gameOver();
+        } else if (key === 'Enter') {
+            triggerHover('fight-button');
+            fight();
         }
-    } else if (document.querySelector('.page.active').id === 'store-page') {
+    } else if (activePageId === 'store-page') {
         if (key >= '1' && key <= '7') {
+            triggerHover(`buy-button-${key}`);
             buyItem(key);
         } else if (key == 'Enter') {
+            triggerHover('continue-button');
             showPage('dungeon-page');
             encounterMonster();
         }
-    } else if (document.querySelector('.page.active').id === 'start-page') {
+    } else if (activePageId === 'start-page') {
         if (key == 'Enter') {
+            triggerHover('start-button');
             showPage('dungeon-page');
             startGame();
         }
-    } else if (document.querySelector('.page.active').id === 'end-page') {
+    } else if (activePageId === 'end-page') {
         if (key == 'Enter') {
+            triggerHover('retry-button');
             showPage('start-page');
             startGame();
         }
+    } else if (key == 'Backspace') {
+        closePopup()
     }
 });
+
+function triggerHover(buttonId) {
+    const button = document.getElementById(buttonId);
+    if (button) {
+        button.classList.add('hover');
+        setTimeout(() => button.classList.remove('hover'), 300); // Match with your CSS transition duration
+    }
+}
+
 
 let playerHealth, playerDamage, playerCoins, playerScore, damageBuffCount, doubleCoinsCount;
 let monsterHealth, monsterDamage, coinsMultiplier;
