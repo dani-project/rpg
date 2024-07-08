@@ -57,6 +57,11 @@ document.addEventListener('keydown', (event) => {
             showPage('dungeon-page');
             startGame();
         }
+    } else if (document.querySelector('.page.active').id === 'end-page') {
+        if (key == 'Enter') {
+            showPage('start-page');
+            startGame();
+        }
     }
 });
 
