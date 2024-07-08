@@ -7,7 +7,7 @@
 body {
     font-family: 'PixelFont';
     background-color: black;
-    color: #1c2dab;  /* #1c2dab; Slightly lighter blue */
+    color: #1c2dab; /* Slightly lighter blue */
     margin: 0;
     display: flex;
     justify-content: center;
@@ -29,7 +29,7 @@ body {
     background-color: black;
     border: 2px solid #1c2dab;
     padding: 10px 20px;
-    color: #1c2dab;  /* #1c2dab; Slightly lighter blue */
+    color: #1c2dab;
     cursor: pointer;
     margin: 10px;
     font-size: 1em; /* Adjusted font size for mobile */
@@ -37,7 +37,8 @@ body {
     display: inline-block;
 }
 
-.custom-button:hover {
+.custom-button:hover,
+.custom-button.hover {
     color: #00ff88;
     background-color: #000000;
     border: 2px solid #00ff88;
@@ -46,10 +47,10 @@ body {
 
 .custom-box {
     background-color: black;
-    border: 2px solid #1c2dab; /* #1c2dab; Slightly lighter blue */
+    border: 2px solid #1c2dab;
     padding: 10px;
     margin: 10px;
-    color: #1c2dab;  /* #1c2dab; Slightly lighter blue */
+    color: #1c2dab;
     width: 90%; /* Adjusted width for mobile */
     margin: 0 auto 20px auto;
 }
@@ -78,7 +79,7 @@ body {
     align-items: center;
     margin: 10px 0;
     padding: 5px;
-    border: 2px solid #1c2dab;; /* #1c2dab; Slightly lighter blue */
+    border: 1px solid #1c2dab;
     background-color: #000;
     width: 90%; /* Adjusted width for mobile */
     margin: 0 auto;
@@ -130,7 +131,7 @@ p {
     background-image: url('background.gif');
     background-size: cover;
     padding: 10px;
-    border: 2px solid #1c2dab; /* #1c2dab; Slightly lighter blue */
+    border: 2px solid #1c2dab;
     width: 100%;
     display: flex;
     justify-content: space-around;
@@ -166,3 +167,4 @@ p {
         height: 200px;
     }
 }
+
