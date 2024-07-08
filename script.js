@@ -35,6 +35,23 @@ document.querySelectorAll('.buy-button').forEach(button => {
     });
 });
 
+document.addEventListener('keydown', (event) => {
+    const key = event.key;
+    if (document.querySelector('.page.active').id === 'dungeon-page') {
+        if (key === '1') {
+            fight();
+        } else if (key === '2') {
+            run();
+        } else if (key === '3') {
+            gameOver();
+        }
+    } else if (document.querySelector('.page.active').id === 'store-page') {
+        if (key >= '1' && key <= '7') {
+            buyItem(key);
+        }
+    }
+});
+
 let playerHealth, playerDamage, playerCoins, playerScore, damageBuffCount, doubleCoinsCount;
 let monsterHealth, monsterDamage, coinsMultiplier;
 const playerImage = document.getElementById('player-image');
