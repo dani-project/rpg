@@ -48,6 +48,14 @@ document.addEventListener('keydown', (event) => {
     } else if (document.querySelector('.page.active').id === 'store-page') {
         if (key >= '1' && key <= '7') {
             buyItem(key);
+        } else if (key == 'Enter') {
+            showPage('dungeon-page');
+            encounterMonster();
+        }
+    } else if (document.querySelector('.page.active').id === 'start-page') {
+        if (key == 'Enter') {
+            showPage('dungeon-page');
+            startGame();
         }
     }
 });
@@ -136,7 +144,7 @@ function fight() {
     monsterHealth -= playerAttackDamage;
     logTextElement.innerText = ` You dealt ${Math.ceil(playerAttackDamage)} damage to the monster.\n`;
     monsterHealthElement.textContent = `Monster Health: ${Math.ceil(monsterHealth)} HP`;
-    
+
     if (monsterHealth <= 0) {
         logTextElement.innerText += " Congratulations! You defeated the monster!\n";
         const coinsEarned = Math.ceil(randomInt(30, 120) * coinsMultiplier * (1 + doubleCoinsCount * 0.5));
@@ -147,12 +155,12 @@ function fight() {
         showPage('store-page');
         return;
     }
-    
+
     const monsterAttackDamage = Math.ceil(monsterDamage);
     playerHealth -= monsterAttackDamage;
     logTextElement.innerText += ` The monster dealt ${Math.ceil(monsterAttackDamage)} damage to you.\n`;
     updatePlayerInfo();
-    
+
     if (playerHealth <= 0) {
         gameOver();
     }
@@ -234,7 +242,7 @@ function buyItem(item) {
             logTextElement.innerText = "Invalid choice!\n";
             break;
     }
-    
+
     if (affordable) {
         updatePlayerInfo();
         showPage('dungeon-page');
