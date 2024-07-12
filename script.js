@@ -38,54 +38,74 @@ document.querySelectorAll('.buy-button').forEach(button => {
 document.addEventListener('keydown', (event) => {
     const key = event.key;
     const activePageId = document.querySelector('.page.active').id;
+    const popupActive = popupElement.classList.contains('active');
 
-    if (activePageId === 'dungeon-page') {
-        if (key === '1') {
-            triggerHover('fight-button');
-            fight();
-        } else if (key === '2') {
-            triggerHover('run-button');
-            run();
-        } else if (key === '3') {
-            triggerHover('quit-button');
-            gameOver();
-        } else if (key === 'Enter') {
-            triggerHover('fight-button');
-            fight();
+    if (popupActive) {
+        if (key === 'Backspace' || key === 'Escape' || key === 'Esc') {
+            console.log("Popup: Backspace/Escape key pressed - Close Popup");
+            triggerHover('popup-close-button');
+            closePopup();
         }
-    } else if (activePageId === 'store-page') {
-        if (key >= '1' && key <= '7') {
-            triggerHover(`buy-button-${key}`);
-            buyItem(key);
-        } else if (key == 'Enter') {
-            triggerHover('continue-button');
-            showPage('dungeon-page');
-            encounterMonster();
+    } else {
+        if (activePageId == 'dungeon-page') {
+            if (key === '1' || key === 'Enter') {
+                console.log("Dungeon Page: Input 1 - Fight");
+                triggerHover('fight-button');
+                fight();
+            } else if (key === '2' || key === 'Backspace') {
+                console.log("Dungeon Page: Input 2 - Run");
+                triggerHover('run-button');
+                run();
+            } else if (key === '3') {
+                console.log("Dungeon Page: Input 3 - Quit");
+                triggerHover('quit-button');
+                gameOver();
+            }
+        } else if (activePageId === 'store-page') {
+            if (key >= '1' && key <= '7') {
+                console.log("Store Page: Key pressed is " + key);
+                const buttonId = `buy-button-${key}`;
+                triggerHover(buttonId);
+                buyItem((parseInt(key) + 1).toString());
+            } else if (key == 'Enter') {
+                console.log("Store Page: Enter key pressed - Continue Exploring");
+                triggerHover('continue-button');
+                showPage('dungeon-page');
+                encounterMonster();
+            }
+        } else if (activePageId === 'start-page') {
+            if (key == 'Enter') {
+                console.log("Start Page: Enter key pressed - Start Game");
+                triggerHover('start-button');
+                showPage('dungeon-page');
+                startGame();
+            }
+        } else if (activePageId === 'end-page') {
+            if (key == 'Enter') {
+                console.log("End Page: Enter key pressed - Retry");
+                triggerHover('retry-button');
+                showPage('start-page');
+                startGame();
+            }
         }
-    } else if (activePageId === 'start-page') {
-        if (key == 'Enter') {
-            triggerHover('start-button');
-            showPage('dungeon-page');
-            startGame();
-        }
-    } else if (activePageId === 'end-page') {
-        if (key == 'Enter') {
-            triggerHover('retry-button');
-            showPage('start-page');
-            startGame();
-        }
-    } else if (key == 'Backspace') {
-        closePopup()
     }
 });
+
 
 function triggerHover(buttonId) {
     const button = document.getElementById(buttonId);
     if (button) {
+        console.log(`Triggering hover for ${buttonId}`);
         button.classList.add('hover');
-        setTimeout(() => button.classList.remove('hover'), 300); // Match with your CSS transition duration
+        setTimeout(() => {
+            button.classList.remove('hover');
+            console.log(`Removing hover for ${buttonId}`);
+        }, 300); // Match with your CSS transition duration
+    } else {
+        console.log(`Button with ID ${buttonId} not found`);
     }
 }
+
 
 
 let playerHealth, playerDamage, playerCoins, playerScore, damageBuffCount, doubleCoinsCount;
