@@ -1,7 +1,8 @@
 {
   "scripts": {
     "test": "node test",
-    "server": "node server"
+    "server": "node server",
+    "build": "npm run build"
   },
   "dependencies": {
     "cors": "^2.8.5",
