@@ -38,74 +38,54 @@ document.querySelectorAll('.buy-button').forEach(button => {
 document.addEventListener('keydown', (event) => {
     const key = event.key;
     const activePageId = document.querySelector('.page.active').id;
-    const popupActive = popupElement.classList.contains('active');
 
-    if (popupActive) {
-        if (key === 'Backspace' || key === 'Escape' || key === 'Esc') {
-            console.log("Popup: Backspace/Escape key pressed - Close Popup");
-            triggerHover('popup-close-button');
-            closePopup();
+    if (activePageId === 'dungeon-page') {
+        if (key === '1') {
+            triggerHover('fight-button');
+            fight();
+        } else if (key === '2') {
+            triggerHover('run-button');
+            run();
+        } else if (key === '3') {
+            triggerHover('quit-button');
+            gameOver();
+        } else if (key === 'Enter') {
+            triggerHover('fight-button');
+            fight();
         }
-    } else {
-        if (activePageId == 'dungeon-page') {
-            if (key === '1' || key === 'Enter') {
-                console.log("Dungeon Page: Input 1 - Fight");
-                triggerHover('fight-button');
-                fight();
-            } else if (key === '2' || key === 'Backspace') {
-                console.log("Dungeon Page: Input 2 - Run");
-                triggerHover('run-button');
-                run();
-            } else if (key === '3') {
-                console.log("Dungeon Page: Input 3 - Quit");
-                triggerHover('quit-button');
-                gameOver();
-            }
-        } else if (activePageId === 'store-page') {
-            if (key >= '1' && key <= '7') {
-                console.log("Store Page: Key pressed is " + key);
-                const buttonId = `buy-button-${key}`;
-                triggerHover(buttonId);
-                buyItem((parseInt(key) + 1).toString());
-            } else if (key == 'Enter') {
-                console.log("Store Page: Enter key pressed - Continue Exploring");
-                triggerHover('continue-button');
-                showPage('dungeon-page');
-                encounterMonster();
-            }
-        } else if (activePageId === 'start-page') {
-            if (key == 'Enter') {
-                console.log("Start Page: Enter key pressed - Start Game");
-                triggerHover('start-button');
-                showPage('dungeon-page');
-                startGame();
-            }
-        } else if (activePageId === 'end-page') {
-            if (key == 'Enter') {
-                console.log("End Page: Enter key pressed - Retry");
-                triggerHover('retry-button');
-                showPage('start-page');
-                startGame();
-            }
+    } else if (activePageId === 'store-page') {
+        if (key >= '1' && key <= '7') {
+            triggerHover(`buy-button-${key}`);
+            buyItem(key);
+        } else if (key == 'Enter') {
+            triggerHover('continue-button');
+            showPage('dungeon-page');
+            encounterMonster();
         }
+    } else if (activePageId === 'start-page') {
+        if (key == 'Enter') {
+            triggerHover('start-button');
+            showPage('dungeon-page');
+            startGame();
+        }
+    } else if (activePageId === 'end-page') {
+        if (key == 'Enter') {
+            triggerHover('retry-button');
+            showPage('start-page');
+            startGame();
+        }
+    } else if (key == 'Backspace') {
+        closePopup()
     }
 });
-
 
 function triggerHover(buttonId) {
     const button = document.getElementById(buttonId);
     if (button) {
-        console.log(`Triggering hover for ${buttonId}`);
         button.classList.add('hover');
-        setTimeout(() => {
-            button.classList.remove('hover');
-            console.log(`Removing hover for ${buttonId}`);
-        }, 300); // Match with your CSS transition duration
-    } else {
-        console.log(`Button with ID ${buttonId} not found`);
+        setTimeout(() => button.classList.remove('hover'), 300); // Match with your CSS transition duration
     }
 }
-
 
 
 let playerHealth, playerDamage, playerCoins, playerScore, damageBuffCount, doubleCoinsCount;
@@ -188,30 +168,74 @@ function encounterMonster() {
 }
 
 function fight() {
-    const playerAttackDamage = Math.ceil(randomInt(12, 18) * (1 + damageBuffCount * 0.1));
-    monsterHealth -= playerAttackDamage;
-    logTextElement.innerText = ` You dealt ${Math.ceil(playerAttackDamage)} damage to the monster.\n`;
-    monsterHealthElement.textContent = `Monster Health: ${Math.ceil(monsterHealth)} HP`;
+    // Disable buttons during animation
+    const fightButton = document.getElementById('fight-button');
+    const runButton = document.getElementById('run-button');
+    const quitButton = document.getElementById('quit-button');
+    
+    fightButton.disabled = true;
+    runButton.disabled = true;
+    quitButton.disabled = true;
 
-    if (monsterHealth <= 0) {
-        logTextElement.innerText += " Congratulations! You defeated the monster!\n";
-        const coinsEarned = Math.ceil(randomInt(30, 120) * coinsMultiplier * (1 + doubleCoinsCount * 0.5));
-        playerCoins += coinsEarned;
-        playerScore += coinsMultiplier;
-        logTextElement.innerText += ` You earned ${Math.ceil(coinsEarned)} coins!\n`;
-        updatePlayerInfo();
-        showPage('store-page');
-        return;
-    }
+    // Player attack sequence
+    playerImage.classList.add('player-attack');
+    monsterImage.classList.add('monster-hit');
 
-    const monsterAttackDamage = Math.ceil(monsterDamage);
-    playerHealth -= monsterAttackDamage;
-    logTextElement.innerText += ` The monster dealt ${Math.ceil(monsterAttackDamage)} damage to you.\n`;
-    updatePlayerInfo();
+    setTimeout(() => {
+        // Remove animations after they complete
+        playerImage.classList.remove('player-attack');
+        monsterImage.classList.remove('monster-hit');
 
-    if (playerHealth <= 0) {
-        gameOver();
-    }
+        // Calculate player damage
+        const playerAttackDamage = Math.ceil(randomInt(12, 18) * (1 + damageBuffCount * 0.1));
+        monsterHealth -= playerAttackDamage;
+        logTextElement.innerText = ` You dealt ${Math.ceil(playerAttackDamage)} damage to the monster.\n`;
+        monsterHealthElement.textContent = `Monster Health: ${Math.ceil(monsterHealth)} HP`;
+
+        if (monsterHealth <= 0) {
+            logTextElement.innerText += " Congratulations! You defeated the monster!\n";
+            const coinsEarned = Math.ceil(randomInt(30, 120) * coinsMultiplier * (1 + doubleCoinsCount * 0.5));
+            playerCoins += coinsEarned;
+            playerScore += coinsMultiplier;
+            logTextElement.innerText += ` You earned ${Math.ceil(coinsEarned)} coins!\n`;
+            updatePlayerInfo();
+            
+            // Re-enable buttons before page transition
+            fightButton.disabled = false;
+            runButton.disabled = false;
+            quitButton.disabled = false;
+            
+            showPage('store-page');
+            return;
+        }
+
+        // Monster counter-attack sequence (after a brief delay)
+        setTimeout(() => {
+            monsterImage.classList.add('monster-attack');
+            playerImage.classList.add('player-hit');
+
+            setTimeout(() => {
+                // Remove animations
+                monsterImage.classList.remove('monster-attack');
+                playerImage.classList.remove('player-hit');
+
+                // Calculate monster damage
+                const monsterAttackDamage = Math.ceil(monsterDamage);
+                playerHealth -= monsterAttackDamage;
+                logTextElement.innerText += ` The monster dealt ${Math.ceil(monsterAttackDamage)} damage to you.\n`;
+                updatePlayerInfo();
+
+                if (playerHealth <= 0) {
+                    gameOver();
+                }
+
+                // Re-enable buttons after all animations complete
+                fightButton.disabled = false;
+                runButton.disabled = false;
+                quitButton.disabled = false;
+            }, 400); // Monster attack animation duration
+        }, 300); // Delay between player and monster attacks
+    }, 400); // Player attack animation duration
 }
 
 function run() {
@@ -238,7 +262,7 @@ function gameOver() {
 function buyItem(item) {
     let affordable = false;
     switch (item) {
-        case '2':
+        case '1':  // This matches the first item in your store (Damage Buff)
             if (playerCoins >= 100) {
                 playerCoins -= 100;
                 damageBuffCount++;
@@ -246,7 +270,7 @@ function buyItem(item) {
                 affordable = true;
             }
             break;
-        case '3':
+        case '2':  // Better Damage Buff
             if (playerCoins >= 250) {
                 playerCoins -= 250;
                 damageBuffCount += 3;
@@ -254,7 +278,7 @@ function buyItem(item) {
                 affordable = true;
             }
             break;
-        case '4':
+        case '3':  // Legendary Health Potion
             if (playerCoins >= 400) {
                 playerCoins -= 400;
                 playerHealth += 1000;
@@ -262,7 +286,7 @@ function buyItem(item) {
                 affordable = true;
             }
             break;
-        case '5':
+        case '4':  // Super Potion
             if (playerCoins >= 100) {
                 playerCoins -= 100;
                 playerHealth += 50;
@@ -270,7 +294,7 @@ function buyItem(item) {
                 affordable = true;
             }
             break;
-        case '6':
+        case '5':  // Potion
             if (playerCoins >= 40) {
                 playerCoins -= 40;
                 playerHealth += 20;
@@ -278,7 +302,7 @@ function buyItem(item) {
                 affordable = true;
             }
             break;
-        case '7':
+        case '6':  // Coins Upgrade
             if (playerCoins >= 250) {
                 playerCoins -= 250;
                 doubleCoinsCount++;
