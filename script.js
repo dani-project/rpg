@@ -28,6 +28,10 @@ document.getElementById('popup-close-button').addEventListener('click', () => {
     closePopup();
 });
 
+document.getElementById('back-button').addEventListener('click', () => {
+    hideMoveSelection();
+});
+
 document.querySelectorAll('.buy-button').forEach(button => {
     button.addEventListener('click', (event) => {
         const item = event.target.dataset.item;
@@ -54,7 +58,7 @@ document.addEventListener('keydown', (event) => {
             fight();
         }
     } else if (activePageId === 'store-page') {
-        if (key >= '1' && key <= '7') {
+        if (key >= '1' && key <= '9') {
             triggerHover(`buy-button-${key}`);
             buyItem(key);
         } else if (key == 'Enter') {
@@ -75,7 +79,7 @@ document.addEventListener('keydown', (event) => {
             startGame();
         }
     } else if (key == 'Backspace') {
-        closePopup()
+        closePopup();
     }
 });
 
@@ -83,16 +87,25 @@ function triggerHover(buttonId) {
     const button = document.getElementById(buttonId);
     if (button) {
         button.classList.add('hover');
-        setTimeout(() => button.classList.remove('hover'), 300); // Match with your CSS transition duration
+        setTimeout(() => button.classList.remove('hover'), 300);
     }
 }
 
-
-let playerHealth, playerDamage, playerCoins, playerScore, damageBuffCount, doubleCoinsCount;
+let playerHealth, playerDamage, playerCoins, playerScore, damageBuffCount, doubleCoinsCount, playerStamina;
 let monsterHealth, monsterDamage, coinsMultiplier;
+const playerMoves = [];
+const allPossibleMoves = [
+    { name: "Hollow Purple", baseDamage: [100, 100], staminaCost: 30 },
+    { name: "Flare Blitz", baseDamage: [70, 70], staminaCost: 25 },
+    { name: "Flying Raijin", baseDamage: [35, 35], staminaCost: 15 },
+    { name: "Slash", baseDamage: [20, 20], staminaCost: 5 },
+    { name: "Last Resort", baseDamage: [0, 0], staminaCost: 25, special: "50% chance to do 100 or 0 damage" }
+];
+
 const playerImage = document.getElementById('player-image');
 const monsterImage = document.getElementById('monster-image');
 const playerHealthElement = document.getElementById('player-health');
+const playerStaminaElement = document.getElementById('player-stamina');
 const playerCoinsElement = document.getElementById('player-coins');
 const playerScoreElement = document.getElementById('player-score');
 const playerCoinsStoreElement = document.getElementById('player-coins-store');
@@ -101,6 +114,8 @@ const monsterHealthElement = document.getElementById('monster-health');
 const logTextElement = document.getElementById('log-text');
 const popupElement = document.getElementById('popup');
 const popupMessageElement = document.getElementById('popup-message');
+const moveSelectionElement = document.getElementById('move-selection');
+const moveButtonsElement = document.getElementById('move-buttons');
 
 function showPage(pageId) {
     document.querySelectorAll('.page').forEach(page => {
@@ -114,14 +129,18 @@ function startGame() {
     playerDamage = 10;
     playerCoins = 0;
     playerScore = 0;
+    playerStamina = 100;
     damageBuffCount = 0;
     doubleCoinsCount = 0;
+    playerMoves.length = 0;
+    playerMoves.push({ name: "Basic Punch", baseDamage: [10, 15], staminaCost: 5 }); // Changed to 5 STM
     updatePlayerInfo();
     encounterMonster();
 }
 
 function updatePlayerInfo() {
     playerHealthElement.textContent = `Health: ${Math.ceil(playerHealth)} HP`;
+    playerStaminaElement.textContent = `Stamina: ${Math.ceil(playerStamina)} STM`;
     playerCoinsElement.textContent = `Coins: ${Math.ceil(playerCoins)}`;
     playerCoinsStoreElement.textContent = `Coins: ${Math.ceil(playerCoins)}`;
     playerScoreElement.textContent = `Score: ${Math.ceil(playerScore)}`;
@@ -136,28 +155,24 @@ function encounterMonster() {
     const encounterChance = Math.random() * 100;
 
     if (encounterChance <= 3) {
-        // Secret boss (3%)
         monsterHealth = 1000;
         monsterDamage = randomInt(60, 100);
         coinsMultiplier = 5;
         monsterImage.src = 'secret_boss.gif';
         logTextElement.textContent = "\nA secret boss monster appears!";
     } else if (encounterChance <= 9) {
-        // Rare boss (6%)
         monsterHealth = 500;
         monsterDamage = randomInt(30, 60);
         coinsMultiplier = 3;
         monsterImage.src = 'rare_boss.gif';
         logTextElement.textContent = "\nA rare boss monster appears!";
     } else if (encounterChance <= 24) {
-        // Regular boss (15%)
         monsterHealth = 200;
         monsterDamage = randomInt(15, 25);
         coinsMultiplier = 2;
         monsterImage.src = 'boss.gif';
         logTextElement.textContent = "\nA boss monster appears!";
     } else {
-        // Regular monster (remaining 76%)
         monsterHealth = randomInt(20, 70);
         monsterDamage = randomInt(5, 15);
         coinsMultiplier = 1;
@@ -167,8 +182,67 @@ function encounterMonster() {
     monsterHealthElement.textContent = `Monster Health: ${Math.ceil(monsterHealth)} HP`;
 }
 
-function fight() {
-    // Disable buttons during animation
+function showMoveSelection() {
+    document.getElementById('actions').classList.add('hidden');
+    moveSelectionElement.classList.remove('hidden');
+    renderMoveButtons();
+}
+
+function hideMoveSelection() {
+    document.getElementById('actions').classList.remove('hidden');
+    moveSelectionElement.classList.add('hidden');
+}
+
+function renderMoveButtons() {
+    moveButtonsElement.innerHTML = '';
+    playerMoves.forEach((move, index) => {
+        const moveButton = document.createElement('div');
+        moveButton.className = 'move-button';
+        moveButton.innerHTML = `
+            <div class="move-name">${move.name}</div>
+            <div class="move-details">
+                DMG: ${calculateMoveDamage(move)} | STM: ${move.staminaCost}
+                ${move.special ? `<br>${move.special}` : ''}
+            </div>
+        `;
+        moveButton.addEventListener('click', () => executeMove(move));
+        moveButtonsElement.appendChild(moveButton);
+    });
+}
+
+function calculateMoveDamage(move) {
+    const damageMultiplier = 1 + damageBuffCount * 0.1;
+    const minDamage = Math.ceil(move.baseDamage[0] * damageMultiplier);
+    const maxDamage = Math.ceil(move.baseDamage[1] * damageMultiplier);
+    return minDamage === maxDamage ? minDamage : `${minDamage}-${maxDamage}`;
+}
+
+function executeMove(move) {
+    if (playerStamina < move.staminaCost) {
+        showPopup("Not enough stamina!");
+        return;
+    }
+
+    playerStamina -= move.staminaCost;
+    updatePlayerInfo();
+    hideMoveSelection();
+    
+    if (move.name === "Last Resort") {
+        const success = Math.random() < 0.5;
+        if (success) {
+            // Force 100 damage on success
+            fightWithMove({...move, baseDamage: [100, 100]});
+        } else {
+            logTextElement.innerText = `${move.name} failed (0 damage)!\n`;
+            setTimeout(() => monsterCounterAttack(), 1000);
+        }
+        return;
+    }
+
+    fightWithMove(move);
+}
+
+function fightWithMove(move) {
     const fightButton = document.getElementById('fight-button');
     const runButton = document.getElementById('run-button');
     const quitButton = document.getElementById('quit-button');
@@ -177,19 +251,20 @@ function fight() {
     runButton.disabled = true;
     quitButton.disabled = true;
 
-    // Player attack sequence
     playerImage.classList.add('player-attack');
     monsterImage.classList.add('monster-hit');
 
     setTimeout(() => {
-        // Remove animations after they complete
         playerImage.classList.remove('player-attack');
         monsterImage.classList.remove('monster-hit');
 
-        // Calculate player damage
-        const playerAttackDamage = Math.ceil(randomInt(12, 18) * (1 + damageBuffCount * 0.1));
+        const damageMultiplier = 1 + damageBuffCount * 0.1;
+        const minDamage = move.baseDamage[0] * damageMultiplier;
+        const maxDamage = move.baseDamage[1] * damageMultiplier;
+        const playerAttackDamage = Math.ceil(randomInt(minDamage, maxDamage));
+        
         monsterHealth -= playerAttackDamage;
-        logTextElement.innerText = ` You dealt ${Math.ceil(playerAttackDamage)} damage to the monster.\n`;
+        logTextElement.innerText = ` You used ${move.name} and dealt ${playerAttackDamage} damage!\n`;
         monsterHealthElement.textContent = `Monster Health: ${Math.ceil(monsterHealth)} HP`;
 
         if (monsterHealth <= 0) {
@@ -200,7 +275,6 @@ function fight() {
             logTextElement.innerText += ` You earned ${Math.ceil(coinsEarned)} coins!\n`;
             updatePlayerInfo();
             
-            // Re-enable buttons before page transition
             fightButton.disabled = false;
             runButton.disabled = false;
             quitButton.disabled = false;
@@ -209,41 +283,43 @@ function fight() {
             return;
         }
 
-        // Monster counter-attack sequence (after a brief delay)
-        setTimeout(() => {
-            monsterImage.classList.add('monster-attack');
-            playerImage.classList.add('player-hit');
+        setTimeout(() => monsterCounterAttack(), 1000);
+    }, 400);
+}
 
-            setTimeout(() => {
-                // Remove animations
-                monsterImage.classList.remove('monster-attack');
-                playerImage.classList.remove('player-hit');
+function monsterCounterAttack() {
+    monsterImage.classList.add('monster-attack');
+    playerImage.classList.add('player-hit');
 
-                // Calculate monster damage
-                const monsterAttackDamage = Math.ceil(monsterDamage);
-                playerHealth -= monsterAttackDamage;
-                logTextElement.innerText += ` The monster dealt ${Math.ceil(monsterAttackDamage)} damage to you.\n`;
-                updatePlayerInfo();
+    setTimeout(() => {
+        monsterImage.classList.remove('monster-attack');
+        playerImage.classList.remove('player-hit');
 
-                if (playerHealth <= 0) {
-                    gameOver();
-                }
+        const monsterAttackDamage = Math.ceil(monsterDamage);
+        playerHealth -= monsterAttackDamage;
+        logTextElement.innerText += ` The monster dealt ${Math.ceil(monsterAttackDamage)} damage to you.\n`;
+        updatePlayerInfo();
 
-                // Re-enable buttons after all animations complete
-                fightButton.disabled = false;
-                runButton.disabled = false;
-                quitButton.disabled = false;
-            }, 400); // Monster attack animation duration
-        }, 300); // Delay between player and monster attacks
-    }, 400); // Player attack animation duration
+        if (playerHealth <= 0) {
+            gameOver();
+        }
+
+        document.getElementById('fight-button').disabled = false;
+        document.getElementById('run-button').disabled = false;
+        document.getElementById('quit-button').disabled = false;
+    }, 400);
+}
+
+function fight() {
+    showMoveSelection();
 }
 
 function run() {
-    if (Math.random() < 0.5) {
+    if (Math.random() < 0.7) {
         logTextElement.innerText = "You managed to escape from the monster!\n";
         showPage('store-page');
     } else {
-        const monsterAttackDamage = Math.ceil(randomInt(10, 20));
+        const monsterAttackDamage = Math.ceil(randomInt(9, 11));
         playerHealth -= monsterAttackDamage;
         logTextElement.innerText = `You failed to escape! The monster dealt ${Math.ceil(monsterAttackDamage)} damage to you.\n`;
         if (playerHealth <= 0) {
@@ -262,7 +338,7 @@ function gameOver() {
 function buyItem(item) {
     let affordable = false;
     switch (item) {
-        case '1':  // This matches the first item in your store (Damage Buff)
+        case '1':
             if (playerCoins >= 100) {
                 playerCoins -= 100;
                 damageBuffCount++;
@@ -270,7 +346,7 @@ function buyItem(item) {
                 affordable = true;
             }
             break;
-        case '2':  // Better Damage Buff
+        case '2':
             if (playerCoins >= 250) {
                 playerCoins -= 250;
                 damageBuffCount += 3;
@@ -278,7 +354,7 @@ function buyItem(item) {
                 affordable = true;
             }
             break;
-        case '3':  // Legendary Health Potion
+        case '3':
             if (playerCoins >= 400) {
                 playerCoins -= 400;
                 playerHealth += 1000;
@@ -286,7 +362,7 @@ function buyItem(item) {
                 affordable = true;
             }
             break;
-        case '4':  // Super Potion
+        case '4':
             if (playerCoins >= 100) {
                 playerCoins -= 100;
                 playerHealth += 50;
@@ -294,7 +370,7 @@ function buyItem(item) {
                 affordable = true;
             }
             break;
-        case '5':  // Potion
+        case '5':
             if (playerCoins >= 40) {
                 playerCoins -= 40;
                 playerHealth += 20;
@@ -302,11 +378,40 @@ function buyItem(item) {
                 affordable = true;
             }
             break;
-        case '6':  // Coins Upgrade
+        case '6':
             if (playerCoins >= 250) {
                 playerCoins -= 250;
                 doubleCoinsCount++;
                 logTextElement.innerText = "You bought the 50% More Coins item!\n";
+                affordable = true;
+            }
+            break;
+        case '7':
+            if (playerCoins >= 200) {
+                if (playerMoves.length >= 4) {
+                    showPopup("You already have 4 moves! Replace one?");
+                    return;
+                }
+                playerCoins -= 200;
+                const randomMove = allPossibleMoves[Math.floor(Math.random() * allPossibleMoves.length)];
+                playerMoves.push(randomMove);
+                logTextElement.innerText = `You learned ${randomMove.name}!\n`;
+                affordable = true;
+            }
+            break;
+        case '8':
+            if (playerCoins >= 50) { // Changed to 50 coins
+                playerCoins -= 50;
+                playerStamina += 50;
+                logTextElement.innerText = "You bought a STM Potion and restored 50 STM!\n";
+                affordable = true;
+            }
+            break;
+        case '9':
+            if (playerCoins >= 200) {
+                playerCoins -= 200;
+                playerStamina += 200;
+                logTextElement.innerText = "You bought a Better STM Potion and restored 200 STM!\n";
                 affordable = true;
             }
             break;
@@ -333,5 +438,4 @@ function closePopup() {
     popupElement.classList.remove('active');
 }
 
-// Start the game initially
 showPage('start-page');

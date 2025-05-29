@@ -1,19 +1,18 @@
 @font-face {
     font-family: 'PixelFont';
     src: url('PressStart2P-vaV7.ttf') format('truetype');
-    /* Make sure to provide the correct path to your pixelated font */
 }
 
 body {
     font-family: 'PixelFont';
     background-color: black;
-    color: #1c2dab; /* Slightly lighter blue */
+    color: #1c2dab;
     margin: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    overflow-x: hidden; /* Prevent horizontal scrolling on smaller screens */
+    overflow-x: hidden;
 }
 
 .page {
@@ -32,7 +31,7 @@ body {
     color: #1c2dab;
     cursor: pointer;
     margin: 10px;
-    font-size: 1em; /* Adjusted font size for mobile */
+    font-size: 1em;
     transition: background-color 0.3s, transform 0.3s;
     display: inline-block;
 }
@@ -42,7 +41,7 @@ body {
     color: #00ff88;
     background-color: #000000;
     border: 2px solid #00ff88;
-    transform: scale(1.1); /* Grow the button a bit bigger */
+    transform: scale(1.1);
 }
 
 .custom-box {
@@ -51,7 +50,7 @@ body {
     padding: 10px;
     margin: 10px;
     color: #1c2dab;
-    width: 90%; /* Adjusted width for mobile */
+    width: 90%;
     margin: 0 auto 20px auto;
 }
 
@@ -70,7 +69,7 @@ body {
 #actions {
     display: flex;
     justify-content: center;
-    flex-wrap: wrap; /* Allow actions to wrap on smaller screens */
+    flex-wrap: wrap;
 }
 
 .store-item {
@@ -81,9 +80,9 @@ body {
     padding: 5px;
     border: 1px solid #1c2dab;
     background-color: #000;
-    width: 90%; /* Adjusted width for mobile */
+    width: 90%;
     margin: 0 auto;
-    max-width: 400px; /* Limit max width for smaller screens */
+    max-width: 400px;
 }
 
 .store-item p {
@@ -98,9 +97,10 @@ body {
 
 h1,
 h2,
+h3,
 p {
     margin: 10px 0;
-    font-size: 1.2em; /* Adjusted font size for mobile */
+    font-size: 1.2em;
 }
 
 .popup {
@@ -121,8 +121,8 @@ p {
 
 #player-image,
 #monster-image {
-    width: 150px; /* Reduced size for smaller screens */
-    height: 150px; /* Reduced size for smaller screens */
+    width: 150px;
+    height: 150px;
     padding-right: 100px;
     padding-left: 100px;
 }
@@ -137,55 +137,92 @@ p {
     justify-content: space-around;
     align-items: center;
     color: #ffffff;
-    text-shadow: 2px 2px 0 #000, -2px 2px 0 #000, 2px -2px 0 #000, -2px -2px 0 #000; /* Text outline */
-    flex-wrap: wrap; /* Allow content to wrap on smaller screens */
+    text-shadow: 2px 2px 0 #000, -2px 2px 0 #000, 2px -2px 0 #000, -2px -2px 0 #000;
+    flex-wrap: wrap;
 }
 
-@media (min-width: 768px) {
-    /* Adjustments for tablets and larger screens */
-    .custom-button {
-        font-size: 1.05em;
-    }
-
-    .custom-box {
-        width: 70%;
-    }
-
-    .store-item {
-        max-width: none;
-    }
-
-    h1,
-    h2,
-    p {
-        font-size: 1.05em;
-    }
-
-    #player-image,
-    #monster-image {
-        width: 200px;
-        height: 200px;
-    }
+.hidden {
+    display: none;
 }
 
-/* Add these to your styles.css */
+#move-selection {
+    margin-top: 20px;
+}
+
+#move-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.move-button {
+    background-color: black;
+    border: 2px solid #1c2dab;
+    padding: 8px;
+    color: #1c2dab;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.move-button:hover {
+    color: #00ff88;
+    border-color: #00ff88;
+}
+
+.move-name {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.move-details {
+    font-size: 0.8em;
+}
+
 @keyframes playerAttack {
-    0% { transform: translateX(0); }
-    50% { transform: translateX(100px); }
-    100% { transform: translateX(0); }
+    0% {
+        transform: translateX(0);
+    }
+
+    50% {
+        transform: translateX(100px);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
 }
 
 @keyframes monsterAttack {
-    0% { transform: translateX(0); }
-    50% { transform: translateX(-100px); }
-    100% { transform: translateX(0); }
+    0% {
+        transform: translateX(0);
+    }
+
+    50% {
+        transform: translateX(-100px);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
 }
 
 @keyframes characterHit {
-    0% { filter: brightness(100%); }
-    25% { filter: brightness(300%) drop-shadow(0 0 10px red); }
-    50% { filter: brightness(100%); }
-    100% { filter: brightness(100%); }
+    0% {
+        filter: brightness(100%);
+    }
+
+    25% {
+        filter: brightness(300%) drop-shadow(0 0 10px red);
+    }
+
+    50% {
+        filter: brightness(100%);
+    }
+
+    100% {
+        filter: brightness(100%);
+    }
 }
 
 .player-attack {
@@ -202,4 +239,31 @@ p {
 
 .monster-hit {
     animation: characterHit 0.6s ease-in-out;
+}
+
+@media (min-width: 768px) {
+    .custom-button {
+        font-size: 1.05em;
+    }
+
+    .custom-box {
+        width: 70%;
+    }
+
+    .store-item {
+        max-width: none;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+        font-size: 1.05em;
+    }
+
+    #player-image,
+    #monster-image {
+        width: 200px;
+        height: 200px;
+    }
 }

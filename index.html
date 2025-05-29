@@ -17,6 +17,7 @@
             <div id="player-info">
                 <img src="player.gif" alt="Player" id="player-image">
                 <p id="player-health">Health: 100 HP</p>
+                <p id="player-stamina">Stamina: 100 STM</p>
             </div>
             <div id="monster-info">
                 <img src="monster.gif" alt="Monster" id="monster-image">
@@ -31,10 +32,14 @@
             <div class="custom-button" id="run-button">Run</div>
             <div class="custom-button" id="quit-button">Quit</div>
         </div>
+        <div id="move-selection" class="hidden">
+            <h3>Select a Move:</h3>
+            <div id="move-buttons" class="button-container"></div>
+            <div class="custom-button" id="back-button">Back</div>
+        </div>
         <p id="player-coins">Coins: 0</p>
         <p id="player-score">Score: 0</p>
     </div>
-    
 
     <div id="store-page" class="page">
         <h2>Store</h2>
@@ -64,7 +69,18 @@
                 <p>6. Coins Upgrade (Increases coins earned by 50%) - 250 coins</p>
                 <div class="custom-button buy-button" id="buy-button-6" data-item="6">Buy</div>
             </div>
-            
+            <div class="store-item">
+                <p>7. Random Move (Learn a new attack move) - 200 coins</p>
+                <div class="custom-button buy-button" id="buy-button-7" data-item="7">Buy</div>
+            </div>
+            <div class="store-item">
+                <p>8. STM Potion (Restores 50 STM) - 50 coins</p>
+                <div class="custom-button buy-button" id="buy-button-8" data-item="8">Buy</div>
+            </div>
+            <div class="store-item">
+                <p>9. Better STM Potion (Restores 200 STM) - 200 coins</p>
+                <div class="custom-button buy-button" id="buy-button-9" data-item="9">Buy</div>
+            </div>
         </div>
         <div class="custom-button" id="continue-button">Continue Exploring</div>
     </div>
