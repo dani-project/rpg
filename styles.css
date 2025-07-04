@@ -274,7 +274,16 @@ body::before {
 
 .monster-health .health-fill {
     background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%);
+    transition: width 0.5s ease;
 }
+
+.health-text, .stamina-text {
+    font-size: 0.7rem;
+    color: #fff;
+    text-align: center;
+    min-width: 80px; /* Ensure enough space for numbers */
+}
+
 
 /* Battle Log */
 .battle-log {

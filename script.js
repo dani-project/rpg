@@ -143,11 +143,14 @@ function updatePlayerInfo() {
 
 // Generate a random monster encounter
 // Update your encounterMonster function:
+let initialMonsterHealth = 0; // Add this with your other game state variables
+
 function encounterMonster() {
     const encounterChance = Math.random() * 100;
 
     if (encounterChance <= 3) {
         // Secret boss
+        initialMonsterHealth = 1000;
         monsterHealth = 1000;
         monsterDamage = randomInt(60, 100);
         coinsMultiplier = 5;
@@ -155,6 +158,7 @@ function encounterMonster() {
         logTextElement.textContent = "\nA secret boss monster appears!";
     } else if (encounterChance <= 9) {
         // Rare boss
+        initialMonsterHealth = 500;
         monsterHealth = 500;
         monsterDamage = randomInt(30, 60);
         coinsMultiplier = 3;
@@ -162,6 +166,7 @@ function encounterMonster() {
         logTextElement.textContent = "\nA rare boss monster appears!";
     } else if (encounterChance <= 24) {
         // Regular boss
+        initialMonsterHealth = 200;
         monsterHealth = 200;
         monsterDamage = randomInt(15, 25);
         coinsMultiplier = 2;
@@ -169,7 +174,8 @@ function encounterMonster() {
         logTextElement.textContent = "\nA boss monster appears!";
     } else {
         // Normal monster
-        monsterHealth = randomInt(20, 70);
+        initialMonsterHealth = randomInt(20, 70);
+        monsterHealth = initialMonsterHealth;
         monsterDamage = randomInt(5, 15);
         coinsMultiplier = 1;
         monsterImage.src = 'monster.gif';
@@ -177,8 +183,13 @@ function encounterMonster() {
     }
     
     // Update monster health display
-    monsterHealthFill.style.width = '100%';
-    monsterHealthText.textContent = `${monsterHealth}/${monsterHealth}`;
+    updateMonsterHealthDisplay();
+}
+
+function updateMonsterHealthDisplay() {
+    const healthPercentage = (monsterHealth / initialMonsterHealth) * 100;
+    monsterHealthFill.style.width = `${healthPercentage}%`;
+    monsterHealthText.textContent = `${Math.max(0, Math.ceil(monsterHealth))}/${initialMonsterHealth}`;
 }
 
 // Initialize the fight button
@@ -302,9 +313,7 @@ function fightWithMove(move) {
         logTextElement.innerText = ` You used ${move.name} and dealt ${playerAttackDamage} damage!\n`;
         
         // Update monster health display
-        const monsterHealthPercentage = (Math.max(0, monsterHealth) / monsterHealthFill.parentElement.style.width.replace('%', '')) * 100;
-        monsterHealthFill.style.width = `${monsterHealthPercentage}%`;
-        monsterHealthText.textContent = `${Math.max(0, monsterHealth)}/${monsterHealthFill.parentElement.style.width.replace('%', '')}`;
+        updateMonsterHealthDisplay();
 
         // Check if monster is defeated
         if (monsterHealth <= 0) {
@@ -343,6 +352,7 @@ function monsterCounterAttack() {
         playerHealth -= monsterAttackDamage;
         logTextElement.innerText += ` The monster dealt ${Math.ceil(monsterAttackDamage)} damage to you.\n`;
         updatePlayerInfo();
+        updateMonsterHealthDisplay(); // Ensure health is still displayed correctly
 
         // Check if player is defeated
         if (playerHealth <= 0) {
