@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini RPG Game - Enhanced</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #00ff88;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Animated background particles */
+        .bg-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(0, 255, 136, 0.3);
+            animation: float 6s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
+            50% { transform: translateY(-20px) rotate(180deg); opacity: 0.8; }
+        }
+
+        .page {
+            display: none;
+            min-height: 100vh;
+            padding: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease-in-out;
+        }
+
+        .page.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Start Page */
+        #start-page {
+            background: radial-gradient(circle at 50% 50%, rgba(0, 255, 136, 0.1) 0%, transparent 50%);
+        }
+
+        .game-title {
+            font-size: 3.5em;
+            font-weight: 900;
+            color: #00ff88;
+            text-shadow: 0 0 20px #00ff88, 0 0 40px #00ff88, 0 0 60px #00ff88;
+            margin-bottom: 30px;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 20px #00ff88, 0 0 40px #00ff88, 0 0 60px #00ff88; }
+            to { text-shadow: 0 0 30px #00ff88, 0 0 50px #00ff88, 0 0 80px #00ff88; }
+        }
+
+        /* Battle Interface */
+        #dungeon-page {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+            padding: 0;
+            gap: 0;
+        }
+
+        .battle-arena {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: grid;
+            grid-template-rows: 1fr 200px;
+            background: 
+                linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%),
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="rgba(0,255,136,0.1)"/></svg>');
+            background-size: cover, 20px 20px;
+        }
+
+        .battle-field {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 40px;
+            background: linear-gradient(180deg, rgba(0, 255, 136, 0.05) 0%, transparent 100%);
+        }
+
+        .character-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .character-sprite {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(0, 255, 136, 0.1);
+            border: 3px solid rgba(0, 255, 136, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+
+        .character-sprite.player {
+            background: linear-gradient(135deg, #00ff88 0%, #00cc6a 100%);
+            color: #0a0a0a;
+            transform: scale(1);
+        }
+
+        .character-sprite.monster {
+            background: linear-gradient(135deg, #ff4757 0%, #ff3838 100%);
+            color: #fff;
+            transform: scale(1.1);
+        }
+
+        .health-bar-container {
+            width: 200px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid rgba(0, 255, 136, 0.5);
+            border-radius: 10px;
+            padding: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .health-bar {
+            width: 100%;
+            height: 12px;
+            background: #333;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 5px;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .health-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
+            transition: width 0.5s ease;
+            border-radius: 6px;
+        }
+
+        .monster-health-fill {
+            background: linear-gradient(90deg, #ff4757 0%, #ff3838 100%);
+        }
+
+        .stamina-bar {
+            width: 100%;
+            height: 8px;
+            background: #333;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 5px;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .stamina-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #74b9ff 0%, #0984e3 100%);
+            transition: width 0.5s ease;
+            border-radius: 4px;
+        }
+
+        .stat-text {
+            font-size: 0.9em;
+            color: #00ff88;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+
+        /* Battle UI */
+        .battle-ui {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(26, 26, 46, 0.9) 100%);
+            backdrop-filter: blur(10px);
+            border-top: 3px solid rgba(0, 255, 136, 0.5);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .action-log {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid rgba(0, 255, 136, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            height: 80px;
+            overflow-y: auto;
+            font-size: 0.9em;
+            color: #00ff88;
+            backdrop-filter: blur(10px);
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .action-buttons.hidden {
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+        }
+
+        .move-selection {
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .move-selection.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .move-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .move-card {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.1) 0%, rgba(0, 255, 136, 0.05) 100%);
+            border: 2px solid rgba(0, 255, 136, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .move-card:hover {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.2) 0%, rgba(0, 255, 136, 0.1) 100%);
+            border-color: #00ff88;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3);
+        }
+
+        .move-card.insufficient-stamina {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .move-name {
+            font-weight: bold;
+            color: #00ff88;
+            margin-bottom: 5px;
+        }
+
+        .move-details {
+            font-size: 0.8em;
+            color: rgba(0, 255, 136, 0.7);
+        }
+
+        .game-button {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.1) 0%, rgba(0, 255, 136, 0.05) 100%);
+            border: 2px solid rgba(0, 255, 136, 0.5);
+            border-radius: 10px;
+            padding: 15px 25px;
+            color: #00ff88;
+            font-family: 'Orbitron', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            text-transform: uppercase;
+            font-size: 1em;
+        }
+
+        .game-button:hover {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.2) 0%, rgba(0, 255, 136, 0.1) 100%);
+            border-color: #00ff88;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3);
+        }
+
+        .game-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 255, 136, 0.2);
+        }
+
+        /* Store Page */
+        #store-page {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+            padding: 40px;
+        }
+
+        .store-container {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .store-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .store-title {
+            font-size: 2.5em;
+            font-weight: 900;
+            color: #00ff88;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .player-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .stat-display {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid rgba(0, 255, 136, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+
+        .store-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .store-item {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.1) 0%, rgba(0, 255, 136, 0.05) 100%);
+            border: 2px solid rgba(0, 255, 136, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .store-item:hover {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.2) 0%, rgba(0, 255, 136, 0.1) 100%);
+            border-color: #00ff88;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3);
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: bold;
+            color: #00ff88;
+            margin-bottom: 5px;
+        }
+
+        .item-description {
+            font-size: 0.9em;
+            color: rgba(0, 255, 136, 0.7);
+            margin-bottom: 5px;
+        }
+
+        .item-price {
+            font-size: 0.8em;
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        /* Popup */
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(26, 26, 46, 0.95) 100%);
+            border: 3px solid #00ff88;
+            border-radius: 15px;
+            padding: 30px;
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .popup.active {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .popup-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .popup-backdrop.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Animations */
+        @keyframes attackSlide {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(50px); }
+            100% { transform: translateX(0); }
+        }
+
+        @keyframes monsterAttackSlide {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(-50px); }
+            100% { transform: translateX(0); }
+        }
+
+        @keyframes damageFlash {
+            0% { filter: brightness(1); }
+            25% { filter: brightness(2) drop-shadow(0 0 20px #ff4757); }
+            50% { filter: brightness(1); }
+            75% { filter: brightness(2) drop-shadow(0 0 20px #ff4757); }
+            100% { filter: brightness(1); }
+        }
+
+        .player-attack { animation: attackSlide 0.4s ease-in-out; }
+        .monster-attack { animation: monsterAttackSlide 0.4s ease-in-out; }
+        .damage-flash { animation: damageFlash 0.6s ease-in-out; }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .game-title { font-size: 2.5em; }
+            .battle-field { padding: 20px; }
+            .character-sprite { width: 80px; height: 80px; }
+            .health-bar-container { width: 150px; }
+            .action-buttons { grid-template-columns: 1fr; }
+            .move-grid { grid-template-columns: 1fr; }
+            .store-grid { grid-template-columns: 1fr; }
+            .player-stats { flex-direction: column; gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-particles" id="particles"></div>
+
+    <!-- Start Page -->
+    <div id="start-page" class="page active">
+        <div class="game-title">MINI RPG</div>
+        <div class="game-button" id="start-button">Start Adventure</div>
+    </div>
+
+    <!-- Battle Page -->
+    <div id="dungeon-page" class="page">
+        <div class="battle-arena">
+            <div class="battle-field">
+                <div class="character-container">
+                    <div class="character-sprite player" id="player-sprite">👤</div>
+                    <div class="health-bar-container">
+                        <div class="health-bar">
+                            <div class="health-fill" id="player-health-fill"></div>
+                        </div>
+                        <div class="stamina-bar">
+                            <div class="stamina-fill" id="player-stamina-fill"></div>
+                        </div>
+                        <div class="stat-text" id="player-health-text">Health: 100 HP</div>
+                        <div class="stat-text" id="player-stamina-text">Stamina: 100 STM</div>
+                    </div>
+                </div>
+
+                <div class="character-container">
+                    <div class="character-sprite monster" id="monster-sprite">👹</div>
+                    <div class="health-bar-container">
+                        <div class="health-bar">
+                            <div class="health-fill monster-health-fill" id="monster-health-fill"></div>
+                        </div>
+                        <div class="stat-text" id="monster-health-text">Monster Health: 100 HP</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="battle-ui">
+                <div class="action-log" id="action-log">
+                    <div id="log-text">A wild monster appears!</div>
+                </div>
+
+                <div class="action-buttons" id="action-buttons">
+                    <div class="game-button" id="fight-button">Fight</div>
+                    <div class="game-button" id="run-button">Run</div>
+                    <div class="game-button" id="quit-button">Quit</div>
+                </div>
+
+                <div class="move-selection" id="move-selection">
+                    <div class="move-grid" id="move-grid"></div>
+                    <div class="game-button" id="back-button">Back</div>
+                </div>
+
+                <div class="player-stats">
+                    <div class="stat-display">
+                        <div class="stat-text" id="player-coins">Coins: 0</div>
+                    </div>
+                    <div class="stat-display">
+                        <div class="stat-text" id="player-score">Score: 0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Store Page -->
+    <div id="store-page" class="page">
+        <div class="store-container">
+            <div class="store-header">
+                <div class="store-title">⚔️ ADVENTURER'S SHOP ⚔️</div>
+                <div class="player-stats">
+                    <div class="stat-display">
+                        <div class="stat-text" id="player-coins-store">Coins: 0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="store-grid" id="store-grid">
+                <!-- Store items will be populated by JavaScript -->
+            </div>
+
+            <div class="game-button" id="continue-button">Continue Exploring</div>
+        </div>
+    </div>
+
+    <!-- End Page -->
+    <div id="end-page" class="page">
+        <div class="game-title">GAME OVER</div>
+        <div class="stat-display">
+            <div class="stat-text" id="player-final-score">Final Score: 0</div>
+        </div>
+        <div class="game-button" id="retry-button">Try Again</div>
+    </div>
+
+    <!-- Popup -->
+    <div class="popup-backdrop" id="popup-backdrop"></div>
+    <div class="popup" id="popup">
+        <div class="stat-text" id="popup-message"></div>
+        <div class="game-button" id="popup-close-button">OK</div>
+    </div>
+
+    <script>
+        // Create animated background particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // Game state
+        let playerHealth = 100, playerMaxHealth = 100;
+        let playerStamina = 100, playerMaxStamina = 100;
+        let playerCoins = 0, playerScore = 0;
+        let playerDamage = 10, damageBuffCount = 0, doubleCoinsCount = 0;
+        let monsterHealth = 100, monsterMaxHealth = 100, monsterDamage = 10;
+        let coinsMultiplier = 1;
+        let isInBattle = false;
+
+        const playerMoves = [];
+        const allPossibleMoves = [
+            { name: "Hollow Purple", baseDamage: [100, 100], staminaCost: 30, emoji: "🟣" },
+            { name: "Flare Blitz", baseDamage: [70, 70], staminaCost: 25, emoji: "🔥" },
+            { name: "Flying Raijin", baseDamage: [35, 35], staminaCost: 15, emoji: "⚡" },
+            { name: "Slash", baseDamage: [20, 20], staminaCost: 5, emoji: "⚔️" },
+            { name: "Last Resort", baseDamage: [0, 0], staminaCost: 25, special: "50% chance to do 100 or 0 damage", emoji: "💥" }
+        ];
+
+        const storeItems = [
+            { id: 1, name: "Damage Buff", description: "Increases damage by 10%", price: 100, emoji: "⚔️" },
+            { id: 2, name: "Better Damage Buff", description: "Increases damage by 30%", price: 250, emoji: "🗡️" },
+            { id: 3, name: "Legendary Health Potion", description: "Restores 1000 HP", price: 400, emoji: "🧪" },
+            { id: 4, name: "Super Potion", description: "Restores 50 HP", price: 100, emoji: "🍯" },
+            { id: 5, name: "Potion", description: "Restores 20 HP", price: 40, emoji: "🧉" },
+            { id: 6, name: "Coins Upgrade", description: "Increases coins earned by 50%", price: 250, emoji: "💰" },
+            { id: 7, name: "Random Move", description: "Learn a new attack move", price: 200, emoji: "📜" },
+            { id: 8, name: "STM Potion", description: "Restores 50 STM", price: 50, emoji: "⚡" },
+            { id: 9, name: "Better STM Potion", description: "Restores 200 STM", price: 200, emoji: "🔋" }
+        ];
+
+        // DOM elements
+        const elements = {
+            pages: {
+                start: document.getElementById('start-page'),
+                dungeon: document.getElementById('dungeon-page'),
+                store: document.getElementById('store-page'),
+                end: document.getElementById('end-page')
+            },
+            ui: {
+                playerHealthFill: document.getElementById('player-health-fill'),
+                playerStaminaFill: document.getElementById('player-stamina-fill'),
+                monsterHealthFill: document.getElementById('monster-health-fill'),
+                playerHealthText: document.getElementById('player-health-text'),
+                playerStaminaText: document.getElementById('player-stamina-text'),
+                monsterHealthText: document.getElementById('monster-health-text'),
+                playerCoins: document.getElementById('player-coins'),
+                playerCoinsStore: document.getElementById('player-coins-store'),
+                playerScore: document.getElementById('player-score'),
+                playerFinalScore: document.getElementById('player-final-score'),
+                logText: document.getElementById('log-text'),
+                actionButtons: document.getElementById('action-buttons'),
+                moveSelection: document.getElementById('move-selection'),
+                moveGrid: document.getElementById('move-grid'),
+                storeGrid: document.getElementById('store-grid'),
+                popup: document.getElementById('popup'),
+                popupBackdrop: document.getElementById('popup-backdrop'),
+                popupMessage: document.getElementById('popup-message'),
+                playerSprite: document.getElementById('player-sprite'),
+                monsterSprite: document.getElementById('monster-sprite')
+            }
+        };
+
+        // Utility functions
+        function randomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function showPage(pageId) {
+            Object.values(elements.pages).forEach(page => {
+                page.classList.remove('active');
+            });
+            elements.pages[pageId].classList.add('active');
+        }
+
+        function updateUI() {
+            // Update health bars
+            const playerHealthPercent = Math.max(0, (playerHealth / playerMaxHealth) * 100);
+            const playerStaminaPercent = Math.max(0, (playerStamina / playerMaxStamina) * 100);
+            const monsterHealthPercent = Math.max(0, (monsterHealth / monsterMaxHealth) * 100);
+
+            elements.ui.playerHealthFill.style.width = playerHealthPercent + '%';
+            elements.ui.playerStaminaFill.style.width = playerStaminaPercent + '%';
+            elements.ui.monsterHealthFill.style.width = monsterHealthPercent + '%';
+
+            // Update text
+            elements.ui.playerHealthText.textContent = `Health: ${Math.ceil(playerHealth)} HP`;
+            elements.ui.playerStaminaText.textContent = `Stamina: ${Math.ceil(playerStamina)} STM`;
+            elements.ui.monsterHealthText.textContent = `Monster Health: ${Math.ceil(monsterHealth)} HP`;
+            elements.ui.playerCoins.textContent = `Coins: ${Math.ceil(playerCoins)}`;
+            elements.ui.playerCoinsStore.textContent = `Coins: ${Math.ceil(playerCoins)}`;
+            elements.ui.playerScore.textContent = `Score: ${Math.ceil(playerScore)}`;
+            elements.ui.playerFinalScore.textContent = `Final Score: ${Math.ceil(playerScore)}`;
+        }
+
+        function showPopup(message) {
+            elements.ui.popupMessage.textContent = message;
+            elements.ui.popup.classList.add('active');
+            elements.ui.popupBackdrop.classList.add('active');
+        }
+
+        function hidePopup() {
+            elements.ui.popup.classList.remove('active');
+            elements.ui.popupBackdrop.classList.remove('active');
+        }
+
+        function showMoveSelection() {
+            elements.ui.actionButtons.classList.add('hidden');
+            elements.ui.moveSelection.classList.add('active');
+            renderMoveButtons();
+        }
+
+        function hideMoveSelection() {
+            elements.ui.actionButtons.classList.remove('hidden');
+            elements.ui.moveSelection.classList.remove('active');
+        }
+
+        function renderMoveButtons() {
+            elements.ui.moveGrid.innerHTML = '';
+            playerMoves.forEach(move => {
+                const moveCard = document.createElement('div');
+                moveCard.className = 'move-card';
+                
+                if (playerStamina < move.staminaCost) {
+                    moveCard.classList.add('insufficient-stamina');
+                }
+
+                const damageDisplay = calculateMoveDamage(move);
+                moveCard.innerHTML = `
+                    <div class="move-name">${move.emoji} ${move.name}</div>
+                    <div class="move-details">
+                        DMG: ${damageDisplay} | STM: ${move.staminaCost}
+                        ${move.special ? `<br>${move.special}` : ''}
+                    </div>
+                `;
+                
+                moveCard.addEventListener('click', () => executeMove(move));
+                elements.ui.moveGrid.appendChild(moveCard);
+            });
+        }

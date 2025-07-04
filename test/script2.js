@@ -1,3 +1,5 @@
+//script2.js
+
 document.addEventListener('DOMContentLoaded', () => {
     const grid = document.getElementById('grid');
     const message = document.getElementById('message');

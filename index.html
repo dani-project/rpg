@@ -1,101 +1,263 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mini RPG Game</title>
+    <title>Pixel Monster Battle</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
-    <div id="start-page" class="page active">
-        <h1>Mini RPG Game</h1>
-        <div class="custom-button" id="start-button">Start Game</div>
-    </div>
-
-    <div id="dungeon-page" class="page">
-        <div id="game-info" class="image-container">
-            <div id="player-info">
-                <img src="player.gif" alt="Player" id="player-image">
-                <p id="player-health">Health: 100 HP</p>
-                <p id="player-stamina">Stamina: 100 STM</p>
-            </div>
-            <div id="monster-info">
-                <img src="monster.gif" alt="Monster" id="monster-image">
-                <p id="monster-health">Monster Health: </p>
+    <div class="game-container">
+        <!-- Start Page -->
+        <div id="start-page" class="page active">
+            <div class="title-screen">
+                <div class="game-title">
+                    <span class="title-word">PIXEL</span>
+                    <span class="title-word">MONSTER</span>
+                    <span class="title-word">BATTLE</span>
+                </div>
+                <p class="title-subtitle">PRESS START TO BEGIN</p>
+                <button class="custom-button start-btn" id="start-button">
+                    <i class="fas fa-play"></i> START GAME
+                </button>
             </div>
         </div>
-        <div id="action-log" class="custom-box">
-            <p id="log-text"></p>
-        </div>
-        <div id="actions" class="button-container">
-            <div class="custom-button" id="fight-button">Fight</div>
-            <div class="custom-button" id="run-button">Run</div>
-            <div class="custom-button" id="quit-button">Quit</div>
-        </div>
-        <div id="move-selection" class="hidden">
-            <h3>Select a Move:</h3>
-            <div id="move-buttons" class="button-container"></div>
-            <div class="custom-button" id="back-button">Back</div>
-        </div>
-        <p id="player-coins">Coins: 0</p>
-        <p id="player-score">Score: 0</p>
-    </div>
 
-    <div id="store-page" class="page">
-        <h2>Store</h2>
-        <p id="player-coins-store">Coins: 0</p>
-        <div id="store-items">
-            <div class="store-item">
-                <p>1. Damage Buff (Increases damage by 10%) - 100 coins</p>
-                <div class="custom-button buy-button" id="buy-button-1" data-item="1">Buy</div>
-            </div>
-            <div class="store-item">
-                <p>2. Better Damage Buff (Increases damage by 30%) - 250 coins</p>
-                <div class="custom-button buy-button" id="buy-button-2" data-item="2">Buy</div>
-            </div>
-            <div class="store-item">
-                <p>3. Legendary Health Potion (Restores 1000 HP) - 400 coins</p>
-                <div class="custom-button buy-button" id="buy-button-3" data-item="3">Buy</div>
-            </div>
-            <div class="store-item">
-                <p>4. Super Potion (Restores 50 HP) - 100 coins</p>
-                <div class="custom-button buy-button" id="buy-button-4" data-item="4">Buy</div>
-            </div>
-            <div class="store-item">
-                <p>5. Potion (Restores 20 HP) - 40 coins</p>
-                <div class="custom-button buy-button" id="buy-button-5" data-item="5">Buy</div>
-            </div>
-            <div class="store-item">
-                <p>6. Coins Upgrade (Increases coins earned by 50%) - 250 coins</p>
-                <div class="custom-button buy-button" id="buy-button-6" data-item="6">Buy</div>
-            </div>
-            <div class="store-item">
-                <p>7. Random Move (Learn a new attack move) - 200 coins</p>
-                <div class="custom-button buy-button" id="buy-button-7" data-item="7">Buy</div>
-            </div>
-            <div class="store-item">
-                <p>8. STM Potion (Restores 50 STM) - 50 coins</p>
-                <div class="custom-button buy-button" id="buy-button-8" data-item="8">Buy</div>
-            </div>
-            <div class="store-item">
-                <p>9. Better STM Potion (Restores 200 STM) - 200 coins</p>
-                <div class="custom-button buy-button" id="buy-button-9" data-item="9">Buy</div>
+        <!-- Battle Page -->
+        <div id="dungeon-page" class="page">
+            <div class="battle-screen">
+                <!-- Player Stats -->
+                <div class="player-stats">
+                    <div class="stat-item">
+                        <i class="fas fa-coins stat-icon"></i>
+                        <span id="player-coins">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-star stat-icon"></i>
+                        <span id="player-score">0</span>
+                    </div>
+                </div>
+
+                <!-- Battle Arena -->
+                <div class="battle-arena">
+                    <div class="battle-participant">
+                        <div class="character-container">
+                            <img src="player.gif" alt="Player" class="character-sprite" id="player-image">
+                            <div class="character-shadow"></div>
+                        </div>
+                        <div class="health-bar-container">
+                            <div class="stat-label">PLAYER HEALTH</div>
+                            <div class="health-bar">
+                                <div class="health-fill" id="player-health-fill"></div>
+                            </div>
+                            <div class="health-text" id="player-health-text">100/100</div>
+                        </div>
+                        <div class="stamina-bar-container">
+                            <div class="stat-label">STAMINA</div>
+                            <div class="stamina-bar">
+                                <div class="stamina-fill" id="player-stamina-fill"></div>
+                            </div>
+                            <div class="stamina-text" id="player-stamina-text">100/100</div>
+                        </div>
+                    </div>
+
+                    <div class="vs-indicator">VS</div>
+
+                    <div class="battle-participant">
+                        <div class="character-container">
+                            <img src="monster.gif" alt="Monster" class="character-sprite" id="monster-image">
+                            <div class="character-shadow"></div>
+                        </div>
+                        <div class="health-bar-container">
+                            <div class="stat-label">MONSTER HEALTH</div>
+                            <div class="health-bar monster-health">
+                                <div class="health-fill" id="monster-health-fill"></div>
+                            </div>
+                            <div class="health-text" id="monster-health-text">100/100</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Battle Log -->
+                <div class="battle-log">
+                    <div class="log-content" id="log-text"></div>
+                </div>
+
+                <!-- Battle Actions -->
+                <div id="actions" class="battle-actions">
+                    <div class="action-grid">
+                        <button class="action-btn" id="fight-button">
+                            <i class="fas fa-fist-raised action-icon"></i>
+                            FIGHT
+                            <span class="action-key">1</span>
+                        </button>
+                        <button class="action-btn" id="run-button">
+                            <i class="fas fa-running action-icon"></i>
+                            RUN
+                            <span class="action-key">2</span>
+                        </button>
+                        <button class="action-btn" id="quit-button">
+                            <i class="fas fa-door-open action-icon"></i>
+                            QUIT
+                            <span class="action-key">3</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Move Selection (Hidden by default) -->
+                <div id="move-selection" class="hidden">
+                    <div class="move-header">
+                        <h3>SELECT A MOVE</h3>
+                        <p class="move-subtitle">Choose your attack</p>
+                    </div>
+                    <div class="move-grid" id="move-buttons"></div>
+                    <button class="move-back-btn" id="back-button">
+                        <i class="fas fa-arrow-left"></i> BACK
+                    </button>
+                </div>
             </div>
         </div>
-        <div class="custom-button" id="continue-button">Continue Exploring</div>
-    </div>
 
-    <div id="end-page" class="page">
-        <h1>Game Over</h1>
-        <p id="player-final-score">Score: 0</p>
-        <div class="custom-button" id="retry-button">Retry</div>
-    </div>
+        <!-- Store Page -->
+        <div id="store-page" class="page">
+            <div class="store-screen">
+                <div class="store-header">
+                    <h2 class="store-title">ITEM SHOP</h2>
+                    <div class="store-coins">
+                        <i class="fas fa-coins coin-icon"></i>
+                        <span id="player-coins-store">0</span>
+                    </div>
+                </div>
 
-    <div id="popup" class="popup">
-        <p id="popup-message"></p>
-        <div class="custom-button" id="popup-close-button">Close</div>
-    </div>
+                <div class="store-grid">
+                    <!-- Item 1 -->
+                    <div class="store-item" data-item="1">
+                        <div class="item-icon"><i class="fas fa-arrow-up"></i></div>
+                        <div class="item-info">
+                            <h3 class="item-name">Damage Buff</h3>
+                            <p class="item-desc">Increases damage by 10%</p>
+                            <p class="item-price">100 coins</p>
+                        </div>
+                        <button class="buy-btn" data-item="1">BUY</button>
+                    </div>
 
-    <script src="script.js"></script>
+                    <!-- Item 2 -->
+                    <div class="store-item" data-item="2">
+                        <div class="item-icon"><i class="fas fa-arrow-up"></i></div>
+                        <div class="item-info">
+                            <h3 class="item-name">Better Damage Buff</h3>
+                            <p class="item-desc">Increases damage by 30%</p>
+                            <p class="item-price">250 coins</p>
+                        </div>
+                        <button class="buy-btn" data-item="2">BUY</button>
+                    </div>
+
+                    <!-- Item 3 -->
+                    <div class="store-item" data-item="3">
+                        <div class="item-icon"><i class="fas fa-potion"></i></div>
+                        <div class="item-info">
+                            <h3 class="item-name">Potion</h3>
+                            <p class="item-desc">Restores 20 HP</p>
+                            <p class="item-price">40 coins</p>
+                        </div>
+                        <button class="buy-btn" data-item="3">BUY</button>
+                    </div>
+
+                    <!-- Item 4 -->
+                    <div class="store-item" data-item="4">
+                        <div class="item-icon"><i class="fas fa-wine-bottle"></i></div>
+                        <div class="item-info">
+                            <h3 class="item-name">Super Potion</h3>
+                            <p class="item-desc">Restores 50 HP</p>
+                            <p class="item-price">100 coins</p>
+                        </div>
+                        <button class="buy-btn" data-item="4">BUY</button>
+                    </div>
+
+                    <!-- Item 5 -->
+                    <div class="store-item" data-item="5">
+                        <div class="item-icon"><i class="fas fa-flask"></i></div>
+                        <div class="item-info">
+                            <h3 class="item-name">Legendary Potion</h3>
+                            <p class="item-desc">Restores 1000 HP</p>
+                            <p class="item-price">400 coins</p>
+                        </div>
+                        <button class="buy-btn" data-item="5">BUY</button>
+                    </div>
+
+                    <!-- Item 6 -->
+                    <div class="store-item" data-item="6">
+                        <div class="item-icon"><i class="fas fa-coins"></i></div>
+                        <div class="item-info">
+                            <h3 class="item-name">Coins Upgrade</h3>
+                            <p class="item-desc">Increases coins earned by 50%</p>
+                            <p class="item-price">250 coins</p>
+                        </div>
+                        <button class="buy-btn" data-item="6">BUY</button>
+                    </div>
+
+                    <!-- Item 7 -->
+                    <div class="store-item" data-item="7">
+                        <div class="item-icon"><i class="fas fa-magic"></i></div>
+                        <div class="item-info">
+                            <h3 class="item-name">Random Move</h3>
+                            <p class="item-desc">Learn a new attack move</p>
+                            <p class="item-price">200 coins</p>
+                        </div>
+                        <button class="buy-btn" data-item="7">BUY</button>
+                    </div>
+
+                    <!-- Item 8 -->
+                    <div class="store-item" data-item="8">
+                        <div class="item-icon"><i class="fas fa-bolt"></i></div>
+                        <div class="item-info">
+                            <h3 class="item-name">STM Potion</h3>
+                            <p class="item-desc">Restores 50 STM</p>
+                            <p class="item-price">50 coins</p>
+                        </div>
+                        <button class="buy-btn" data-item="8">BUY</button>
+                    </div>
+
+                    <!-- Item 9 -->
+                    <div class="store-item" data-item="9">
+                        <div class="item-icon"><i class="fas fa-bolt"></i></div>
+                        <div class="item-info">
+                            <h3 class="item-name">Better STM Potion</h3>
+                            <p class="item-desc">Restores 200 STM</p>
+                            <p class="item-price">200 coins</p>
+                        </div>
+                        <button class="buy-btn" data-item="9">BUY</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game Over Page -->
+            <div id="end-page" class="page">
+                <div class="game-over-screen">
+                    <h1>GAME OVER</h1>
+                    <div class="final-score">
+                        <span>FINAL SCORE:</span>
+                        <span id="player-final-score">0</span>
+                    </div>
+                    <button class="custom-button" id="retry-button">
+                        <i class="fas fa-redo"></i> TRY AGAIN
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Popup Modal -->
+        <div id="popup" class="popup hidden">
+            <div class="popup-content">
+                <p id="popup-message"></p>
+                <button class="custom-button" id="popup-close-button">OK</button>
+            </div>
+        </div>
+
+        <script src="script.js"></script>
 </body>
+
 </html>
