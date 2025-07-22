@@ -64,15 +64,15 @@ function initGame() {
 
     // Set up buy button event listeners
     document.querySelectorAll('.buy-btn').forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function () {
             const itemId = this.getAttribute('data-item');
             buyItem(itemId);
         });
     });
-    
+
     // Set up keyboard shortcuts
     document.addEventListener('keydown', handleKeyPress);
-    
+
     // Start on the title screen
     showPage('start-page');
 }
@@ -97,7 +97,7 @@ function startGame() {
     doubleCoinsCount = 0;
     playerMoves.length = 0;
     playerMoves.push({ name: "Basic Punch", baseDamage: [10, 15], staminaCost: 5 });
-    
+
     updatePlayerInfo();
     encounterMonster();
     showPage('dungeon-page');
@@ -115,12 +115,12 @@ function retryGame() {
 }
 
 // Set up buy button event listeners
-    document.querySelectorAll('.buy-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const itemId = this.getAttribute('data-item');
-            buyItem(itemId);
-        });
+document.querySelectorAll('.buy-btn').forEach(button => {
+    button.addEventListener('click', function () {
+        const itemId = this.getAttribute('data-item');
+        buyItem(itemId);
     });
+});
 
 // Update player info display
 function updatePlayerInfo() {
@@ -128,12 +128,12 @@ function updatePlayerInfo() {
     const healthPercentage = (playerHealth / playerMaxHealth) * 100;
     playerHealthFill.style.width = `${healthPercentage}%`;
     playerHealthText.textContent = `${Math.ceil(playerHealth)}/${playerMaxHealth}`;
-    
+
     // Update stamina
     const staminaPercentage = playerStamina;
     playerStaminaFill.style.width = `${staminaPercentage}%`;
     playerStaminaText.textContent = `${Math.ceil(playerStamina)}/100`;
-    
+
     // Update coins and score
     playerCoinsElement.textContent = playerCoins;
     playerCoinsStoreElement.textContent = playerCoins;
@@ -181,7 +181,7 @@ function encounterMonster() {
         monsterImage.src = 'monster.gif';
         logTextElement.textContent = "\nA wild monster appears!";
     }
-    
+
     // Update monster health display
     updateMonsterHealthDisplay();
 }
@@ -193,7 +193,7 @@ function updateMonsterHealthDisplay() {
 }
 
 // Initialize the fight button
-fightButton.addEventListener('click', function() {
+fightButton.addEventListener('click', function () {
     console.log("Fight button clicked");
     console.log("Player moves:", playerMoves);
     showMoveSelection();
@@ -224,10 +224,10 @@ function hideMoveSelection() {
 backButton.addEventListener('click', hideMoveSelection);
 
 // Initialize event listeners after DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     fightButton.addEventListener('click', showMoveSelection);
     backButton.addEventListener('click', hideMoveSelection);
-    
+
     // Make sure elements exist
     if (!actionsElement) console.error("Actions element not found!");
     if (!moveSelectionElement) console.error("Move selection element not found!");
@@ -238,7 +238,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function renderMoveButtons() {
     const moveButtonsElement = document.getElementById('move-buttons');
     moveButtonsElement.innerHTML = ''; // Clear existing buttons
-    
+
     playerMoves.forEach(move => {
         const moveButton = document.createElement('div');
         moveButton.className = 'move-button';
@@ -272,11 +272,11 @@ function executeMove(move) {
     playerStamina -= move.staminaCost;
     updatePlayerInfo();
     hideMoveSelection();
-    
+
     if (move.name === "Last Resort") {
         const success = Math.random() < 0.5;
         if (success) {
-            fightWithMove({...move, baseDamage: [100, 100]});
+            fightWithMove({ ...move, baseDamage: [100, 100] });
         } else {
             logTextElement.innerText = `${move.name} failed (0 damage)!\n`;
             setTimeout(() => monsterCounterAttack(), 1000);
@@ -307,28 +307,28 @@ function fightWithMove(move) {
         const minDamage = move.baseDamage[0] * damageMultiplier;
         const maxDamage = move.baseDamage[1] * damageMultiplier;
         const playerAttackDamage = Math.ceil(randomInt(minDamage, maxDamage));
-        
+
         // Apply damage
         monsterHealth -= playerAttackDamage;
         logTextElement.innerText = ` You used ${move.name} and dealt ${playerAttackDamage} damage!\n`;
-        
+
         // Update monster health display
         updateMonsterHealthDisplay();
 
         // Check if monster is defeated
         if (monsterHealth <= 0) {
             logTextElement.innerText += " Congratulations! You defeated the monster!\n";
-            const coinsEarned = Math.ceil(randomInt(30, 120) * coinsMultiplier * (1 + doubleCoinsCount * 0.5));
+            const coinsEarned = Math.ceil(randomInt(50, 150) * coinsMultiplier * (1 + doubleCoinsCount * 0.5));
             playerCoins += coinsEarned;
             playerScore += coinsMultiplier;
             logTextElement.innerText += ` You earned ${Math.ceil(coinsEarned)} coins!\n`;
             updatePlayerInfo();
-            
+
             // Re-enable buttons
             fightButton.disabled = false;
             runButton.disabled = false;
             quitButton.disabled = false;
-            
+
             // Go to store
             showPage('store-page');
             return;
@@ -390,7 +390,7 @@ function gameOver() {
 }
 
 // Buy item from store
-// Update your buyItem function to match the new order:
+// Buy item from store
 function buyItem(item) {
     let affordable = false;
     let message = "";
@@ -452,17 +452,21 @@ function buyItem(item) {
             break;
             
         case '7': // Random Move
-            if (playerCoins >= 200) {
-                if (playerMoves.length >= 4) {
-                    showPopup("You already have 4 moves! Replace one?");
-                    return;
-                }
-                playerCoins -= 200;
-                const randomMove = allPossibleMoves[Math.floor(Math.random() * allPossibleMoves.length)];
-                playerMoves.push(randomMove);
-                message = `You learned ${randomMove.name}!`;
-                affordable = true;
+            if (playerCoins < 200) {
+                showPopup("You don't have enough coins for this item!");
+                return;
             }
+            
+            if (playerMoves.length >= 4) {
+                showMoveReplacementPopup();
+                return;
+            }
+            
+            playerCoins -= 200;
+            const randomMove = allPossibleMoves[Math.floor(Math.random() * allPossibleMoves.length)];
+            playerMoves.push(randomMove);
+            message = `You learned ${randomMove.name}!`;
+            affordable = true;
             break;
             
         case '8': // STM Potion
@@ -489,24 +493,72 @@ function buyItem(item) {
     }
 
     if (affordable) {
-        logTextElement.innerText = message + "\n";
+        showPopup(message);
         updatePlayerInfo();
-        showPage('dungeon-page');
-        encounterMonster();
-    } else {
+    } else if (!message) {
         showPopup("You don't have enough coins for this item!");
     }
+}
+
+// Show popup to replace a move
+function showMoveReplacementPopup() {
+    popupMessageElement.innerHTML = `
+        <h3>Replace a Move</h3>
+        <p>You already have 4 moves. Choose one to replace:</p>
+        <div class="move-replace-grid" id="move-replace-grid"></div>
+        <button class="custom-button" id="cancel-replace-btn">Cancel</button>
+    `;
+    
+    const grid = document.getElementById('move-replace-grid');
+    
+    playerMoves.forEach((move, index) => {
+        const button = document.createElement('button');
+        button.className = 'move-replace-btn';
+        button.dataset.index = index;
+        button.innerHTML = `
+            <div class="move-name">${move.name}</div>
+            <div class="move-details">
+                DMG: ${calculateMoveDamage(move)} | STM: ${move.staminaCost}
+                ${move.special ? `<br>${move.special}` : ''}
+            </div>
+        `;
+        button.addEventListener('click', () => {
+            if (playerCoins >= 200) {
+                replaceMove(index);
+            } else {
+                showPopup("You don't have enough coins!");
+            }
+        });
+        grid.appendChild(button);
+    });
+    
+    document.getElementById('cancel-replace-btn').addEventListener('click', closePopup);
+    popupElement.classList.remove('hidden');
+    popupElement.classList.add('active');
+}
+
+function replaceMove(index) {
+    const randomMove = allPossibleMoves[Math.floor(Math.random() * allPossibleMoves.length)];
+    const oldMoveName = playerMoves[index].name;
+    playerMoves[index] = randomMove;
+    playerCoins -= 200;
+    
+    closePopup();
+    showPopup(`You replaced ${oldMoveName} with ${randomMove.name}!`);
+    updatePlayerInfo();
 }
 
 // Show popup message
 function showPopup(message) {
     popupMessageElement.textContent = message;
+    popupElement.classList.remove('hidden');
     popupElement.classList.add('active');
 }
 
 // Close popup
 function closePopup() {
     popupElement.classList.remove('active');
+    popupElement.classList.add('hidden');
 }
 
 // Handle keyboard input
