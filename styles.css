@@ -855,3 +855,21 @@ body::before {
     max-height: 80vh;
     overflow-y: auto;
 }
+
+.move-button:focus, 
+.move-button.hover {
+    border-color: #ff6b6b;
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
+    outline: none;
+}
+
+.game-container:focus {
+    outline: none;
+}
+
+.move-button:focus {
+    border-color: #ff6b6b !important;
+    transform: scale(1.05) !important;
+    box-shadow: 0 0 20px rgba(255, 107, 107, 0.3) !important;
+}

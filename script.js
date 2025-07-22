@@ -122,6 +122,123 @@ document.querySelectorAll('.buy-btn').forEach(button => {
     });
 });
 
+// Handle keyboard input
+function handleKeyPress(event) {
+    const key = event.key;
+    const activePageId = document.querySelector('.page.active').id;
+    console.log(`Active page: ${activePageId}`); // Debug log
+
+    // Prevent default for keys we're using
+    if (['1', '2', '3', '4', '5', '6', '7', '8', '9', 'Enter', 'Backspace'].includes(key)) {
+        event.preventDefault();
+    }
+
+    // Handle popup first
+    if (popupElement.classList.contains('active')) {
+        if (key === 'Enter' || key === 'Backspace') {
+            closePopup();
+            return;
+        }
+        // Don't process other keys when popup is open
+        return;
+    }
+
+    // Rest of the function remains the same...
+    switch (activePageId) {
+        case 'start-page':
+            if (key === 'Enter') {
+                triggerHover('start-button');
+                startGame();
+            }
+            break;
+
+        case 'dungeon-page':
+            handleDungeonPageKeys(key);
+            break;
+
+        case 'store-page':
+            handleStorePageKeys(key);
+            break;
+
+        case 'end-page':
+            if (key === 'Enter') {
+                triggerHover('retry-button');
+                retryGame();
+            }
+            break;
+    }
+}
+
+function handleDungeonPageKeys(key) {
+    console.log(`Handling key ${key} in dungeon page`); // Debug log
+    console.log(`Move selection visible? ${!moveSelectionElement.classList.contains('hidden')}`); // Debug log
+    // If move selection is open
+    if (!moveSelectionElement.classList.contains('hidden')) {
+        // Handle move selection (1-4)
+        if (key >= '1' && key <= '4') {
+            const moveIndex = parseInt(key) - 1;
+            if (moveIndex < playerMoves.length) {
+                const moveButtons = document.querySelectorAll('.move-button');
+                if (moveButtons[moveIndex]) {
+                    triggerHover(moveButtons[moveIndex].id || `move-${moveIndex}`);
+                    executeMove(playerMoves[moveIndex]);
+                }
+            }
+        }
+        // Backspace to go back
+        else if (key === 'Backspace') {
+            triggerHover('back-button');
+            hideMoveSelection();
+        }
+    }
+    // If actions are visible
+    else {
+        switch (key) {
+            case '1':
+                console.log('Pressed 1 - attempting to fight'); // Debug log
+                if (fightButton && !fightButton.disabled) {
+                    triggerHover('fight-button');
+                    showMoveSelection();
+                } else {
+                    console.log('Fight button not available or disabled');
+                }
+                break;
+            case 'Enter':
+                // Only trigger fight on Enter if not in move selection
+                if (moveSelectionElement.classList.contains('hidden')) {
+                    triggerHover('fight-button');
+                    showMoveSelection();
+                }
+                break;
+            case '2':
+                triggerHover('run-button');
+                runFromBattle();
+                break;
+            case '3':
+                triggerHover('quit-button');
+                gameOver();
+                break;
+        }
+    }
+}
+
+function handleStorePageKeys(key) {
+    // Handle item selection (1-9)
+    if (key >= '1' && key <= '9') {
+        const itemIndex = parseInt(key);
+        const buyButtons = document.querySelectorAll('.buy-btn');
+        if (buyButtons[itemIndex - 1]) {
+            triggerHover(buyButtons[itemIndex - 1].id || `buy-btn-${itemIndex}`);
+            buyItem(itemIndex.toString());
+        }
+    }
+    // Enter to continue
+    else if (key === 'Enter') {
+        triggerHover('continue-button');
+        continueToBattle();
+    }
+}
+
 // Update player info display
 function updatePlayerInfo() {
     // Update health
@@ -239,9 +356,10 @@ function renderMoveButtons() {
     const moveButtonsElement = document.getElementById('move-buttons');
     moveButtonsElement.innerHTML = ''; // Clear existing buttons
 
-    playerMoves.forEach(move => {
+    playerMoves.forEach((move, index) => {
         const moveButton = document.createElement('div');
         moveButton.className = 'move-button';
+        moveButton.id = `move-${index + 1}`; // Add ID for keyboard targeting
         moveButton.innerHTML = `
             <div class="move-name">${move.name}</div>
             <div class="move-details">
@@ -252,6 +370,15 @@ function renderMoveButtons() {
         moveButton.addEventListener('click', () => executeMove(move));
         moveButtonsElement.appendChild(moveButton);
     });
+}
+
+// Trigger button hover effect
+function triggerHover(buttonId) {
+    const button = document.getElementById(buttonId);
+    if (button) {
+        button.classList.add('hover');
+        setTimeout(() => button.classList.remove('hover'), 200);
+    }
 }
 
 // Calculate move damage
@@ -394,7 +521,7 @@ function gameOver() {
 function buyItem(item) {
     let affordable = false;
     let message = "";
-    
+
     switch (item) {
         case '1': // Damage Buff
             if (playerCoins >= 100) {
@@ -404,7 +531,7 @@ function buyItem(item) {
                 affordable = true;
             }
             break;
-            
+
         case '2': // Better Damage Buff
             if (playerCoins >= 250) {
                 playerCoins -= 250;
@@ -413,7 +540,7 @@ function buyItem(item) {
                 affordable = true;
             }
             break;
-            
+
         case '3': // Potion
             if (playerCoins >= 40) {
                 playerCoins -= 40;
@@ -422,7 +549,7 @@ function buyItem(item) {
                 affordable = true;
             }
             break;
-            
+
         case '4': // Super Potion
             if (playerCoins >= 100) {
                 playerCoins -= 100;
@@ -431,7 +558,7 @@ function buyItem(item) {
                 affordable = true;
             }
             break;
-            
+
         case '5': // Legendary Potion
             if (playerCoins >= 400) {
                 playerCoins -= 400;
@@ -441,7 +568,7 @@ function buyItem(item) {
                 affordable = true;
             }
             break;
-            
+
         case '6': // Coins Upgrade
             if (playerCoins >= 250) {
                 playerCoins -= 250;
@@ -450,25 +577,25 @@ function buyItem(item) {
                 affordable = true;
             }
             break;
-            
+
         case '7': // Random Move
             if (playerCoins < 200) {
                 showPopup("You don't have enough coins for this item!");
                 return;
             }
-            
+
             if (playerMoves.length >= 4) {
                 showMoveReplacementPopup();
                 return;
             }
-            
+
             playerCoins -= 200;
             const randomMove = allPossibleMoves[Math.floor(Math.random() * allPossibleMoves.length)];
             playerMoves.push(randomMove);
             message = `You learned ${randomMove.name}!`;
             affordable = true;
             break;
-            
+
         case '8': // STM Potion
             if (playerCoins >= 50) {
                 playerCoins -= 50;
@@ -477,7 +604,7 @@ function buyItem(item) {
                 affordable = true;
             }
             break;
-            
+
         case '9': // Better STM Potion
             if (playerCoins >= 200) {
                 playerCoins -= 200;
@@ -486,7 +613,7 @@ function buyItem(item) {
                 affordable = true;
             }
             break;
-            
+
         default:
             message = "Invalid item selection!";
             break;
@@ -508,9 +635,9 @@ function showMoveReplacementPopup() {
         <div class="move-replace-grid" id="move-replace-grid"></div>
         <button class="custom-button" id="cancel-replace-btn">Cancel</button>
     `;
-    
+
     const grid = document.getElementById('move-replace-grid');
-    
+
     playerMoves.forEach((move, index) => {
         const button = document.createElement('button');
         button.className = 'move-replace-btn';
@@ -531,7 +658,7 @@ function showMoveReplacementPopup() {
         });
         grid.appendChild(button);
     });
-    
+
     document.getElementById('cancel-replace-btn').addEventListener('click', closePopup);
     popupElement.classList.remove('hidden');
     popupElement.classList.add('active');
@@ -542,7 +669,7 @@ function replaceMove(index) {
     const oldMoveName = playerMoves[index].name;
     playerMoves[index] = randomMove;
     playerCoins -= 200;
-    
+
     closePopup();
     showPopup(`You replaced ${oldMoveName} with ${randomMove.name}!`);
     updatePlayerInfo();
@@ -569,7 +696,7 @@ function handleKeyPress(event) {
     if (activePageId === 'dungeon-page') {
         if (key === '1') {
             triggerHover('fight-button');
-            fight();
+            showMoveSelection();
         } else if (key === '2') {
             triggerHover('run-button');
             runFromBattle();
@@ -578,7 +705,7 @@ function handleKeyPress(event) {
             gameOver();
         } else if (key === 'Enter') {
             triggerHover('fight-button');
-            fight();
+            showMoveSelection();
         }
     } else if (activePageId === 'store-page') {
         if (key >= '1' && key <= '9') {
